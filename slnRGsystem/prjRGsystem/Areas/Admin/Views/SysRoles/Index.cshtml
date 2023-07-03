@@ -1,0 +1,155 @@
+﻿@using prjRGsystem.Context
+@using prjRGsystem.Extensions
+@using prjRGsystem.Managers.DbManagers
+@using prjRGsystem.Models.DbModels
+@using prjRGsystem.Models.ViewModels
+@using X.PagedList
+@model IPagedList<SysRoles>
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    //UserContext userContext = httpContextAccessor.HttpContext.Session.GetObjectFromJson<UserContext>(UserContext.SESSION_NAME);
+    var criteria = ViewData["criteria"] as SysRolesManager.Criteria;
+    List<SysRoles> dataList = Model.ToList();
+}
+
+<script type="text/javascript">
+    $(function() {
+        //第一次預設查詢
+        $("#search").submit();
+
+        //查詢
+        $("#search").on('click', function() {
+            $("#search").submit();
+        });
+
+        //換頁
+        $(".page-item").click(function() {
+            var a = $(this).find("a").prop("page");
+            $('input[name="criteria.pageNumber"]').val($(this).find("a").attr("page"));
+            $("#search").click();
+        });
+        //清除
+        $("#clear").click(function() {
+            event.preventDefault();
+            $("input[name='criteria.userName']").val("");
+            $("input[name='criteria.userId']").val("");
+            $("#search").click();
+        });
+
+        //刪除
+        $(".removed").click(function() {
+            let sysRoleId = $(this).val();
+            if (confirm("是否確定刪除")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Removed","SysRoles",new{Area="Admin"})',
+                    data: { id: sysRoleId },
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                        window.location.href = '/Admin/SysRoles';
+                    }
+                });
+            }
+
+        });
+    });
+</script>
+
+<div class="page-content">
+    <div class="col-12 card">
+        <div class="border-bottom title-part-padding">
+            <h4 class="card-title mb-0">查詢條件</h4>
+        </div>
+
+
+        <div class="card-body">
+            <form class="form-horizontal" action="@Url.Action("Index", "SysRoles", new{Area="Admin"})" method="get">
+                <div class="mb-3 row">
+                    <label class="col-sm-4 control-label col-form-label" style="text-align:right;">
+                        使用者帳號：
+                    </label>
+                    <div class="col-sm-4">
+                        @{
+                            string userName = criteria != null && criteria.userName != null ? criteria.userName : "";
+                            <input type="text" class="form-control" autocomplete="off" name="criteria.userName" value="@userName">
+                        }
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-sm-4 control-label col-form-label" style="text-align:right;">
+                        身份名稱：
+                    </label>
+                    <div class="col-sm-4">
+                        @{
+                            string roleName = criteria != null && criteria.roleName != null ? criteria.roleName : "";
+                            <input type="text" class="form-control" autocomplete="off" name="criteria.roleName" value="@roleName">
+                        }
+                    </div>
+                </div>
+                <div class="p-3 border-top">
+                    <div class="btn-set-inner text-center">
+                        <input type="text" name="criteria.pageNumber" value="" hidden />
+                        <button class="btn btn-info" id="search" type="submit">查詢</button>
+                        <button class="btn btn-danger" id="clear" type="button">清除</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <div class="mb-2">
+                    <a type="button" class="btn btn-sm waves-effect waves-light btn-info" href='@Url.Action("Edit", "SysRoles", new { Area = "Admin" , id = 0 })'>
+                        新增
+                    </a>
+                </div>
+                <div class="col-sm-12">
+                    <table class="table stylish-table v-middle mb-0 no-wrap">
+                        <thead>
+                            <tr>
+                                <th width="10%">序號</th>
+                                <th width="25%">身分名稱</th>
+                                <th width="45%">使用角色帳號</th>
+                                <th width="20%">功能</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int count = (Model.PageNumber - 1) * Model.PageSize;
+
+                                foreach (var data in Model)
+                                {
+                                    if (data.sysUsers != null && data.sysUsers.Count > 0)
+                                        data.userAccounts = string.Join(",", data.sysUsers.Select(m => m.userName).ToArray());
+                                    count++;
+                                    <tr>
+                                        <td>@count</td>
+                                        <td>
+                                            @data.roleName
+                                        </td>
+                                        <td>
+                                            @data.userAccounts
+                                        </td>
+                                        <td class="functions">
+                                            <a type="button" class="btn btn-sm btn-info mb-1" href='@Url.Action("Edit", "SysRoles", new { Area = "Admin" , id = data.id })'>編輯</a>
+                                            <button class="btn btn-sm btn-danger mb-1 removed" value="@data.id">刪除</button>
+                                            <input type="hidden" class="btn btn-sm btn-secondary mb-1" onclick='@Url.Action("index","SysRole",new {id=data.id})' value="瀏覽">
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

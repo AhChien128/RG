@@ -1,0 +1,284 @@
+﻿@using prjRGsystem.Models.DbModels
+@using prjRGsystem.Services
+@using prjRGsystem.Util
+@inject RolePrivilegeService rolePrivilegeService
+@model prjRGsystem.Models.DbModels.SysUser
+@{
+    var sysDepartmentSelect = ViewData["sysDepartmentSelect"] as List<SysDepartment>;
+    var dicSysUserMap = ViewData["dicSysUserMap"] as Dictionary<Int64, List<SysUser>>;
+    var dicSysDepartments = ViewData["dicSysDepartments"] as Dictionary<Int64, SysDepartment>;
+}
+<div class="card">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#home" role="tab">
+                <span>使用者基本資料</span>
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="home" role="tabpanel">
+            <form action="#">
+                <div class="card-body">
+                    <div class="form-body">
+                        <div class="form-group row mb-3">
+                            <label class="col-md-4 control-label"><span style="color: red;">*</span>帳號：</label>
+                            <div class="col-md-3 mb-3">
+                                <input type="text" class="form-control" name="sysUser.userId" value="@Model.userId">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label class="col-md-4 control-label"><span style="color: red;">*</span>姓名：</label>
+                            <div class="col-md-3 mb-3">
+                                <input type="text" class="form-control" name="sysUser.userName" value="@Model.userName">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label class="col-md-4 control-label">密碼：</label>
+                            <div class="col-md-3 mb-3">
+                                <input type="text" class="form-control" name="sysUser.password" value="@(Model.password)">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label class="col-md-4 control-label">是否啟用：</label>
+                            <div class="col-md-8 mb-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input success" type="radio" name="sysUser.enabled" value="true" @((Model.enabled == true || Model.id == 0) ?"checked" : "")>
+                                    <label class="form-check-label" for="success-radio">啟用</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input success" type="radio" name="sysUser.enabled" value="false" @((Model.enabled == false && Model.id > 0) ?"checked" : "")>
+                                    <label class="form-check-label" for="success-radio">未啟用</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-bottom title-part-padding mb-3"></div>
+                        <div class="form-actions">
+                            <div class="text-center mb-3">
+                                @if (rolePrivilegeService.IsAdd() || rolePrivilegeService.IsEdit())
+                                {
+                                    <a id="saveSysUserButton" class="btn btn waves-effect waves-light btn-info mb-1">儲存</a>
+                                }
+                                <a class=" btn btn waves-effect waves-light btn-secondary mb-1" href="@Url.Action("Index","SysUser")">回上頁</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="tab-pane p-3" id="messages" role="tabpanel" @(Model.id == 0 ?"hidden":"")>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <input type="text" id="leaveDate" hidden />
+                        <input type="text" id="leaveId" hidden />
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10 ">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                        <div class="border-bottom title-part-padding mb-3"></div>
+                        <div class="form-actions">
+                            <div class="text-center mb-3">
+                                <a class="btn waves-effect waves-light btn-light-secondary text-secondary" href="@Url.Action("Index","SysUser")">回上頁</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        $("#saveSysUserButton").on('click', function() {
+            let userId = $("input[name='sysUser.userId']").val();
+            let userName = $("input[name='sysUser.userName']").val();
+            let enabled = $("input[name='sysUser.enabled']:checked").val();
+            let password = $("input[name='sysUser.password']").val();
+            if (userId == "") {
+                alert("請輸入帳號");
+                return;
+            }
+            if (userName == "") {
+                alert("請輸入姓名");
+                return;
+            }
+            if (password == "") {
+                alert("請輸入密碼");
+                return;
+            }
+            let formData = new FormData();
+            formData.append("sysUser.id", @Model.id);
+            formData.append("sysUser.userId", userId);
+            formData.append("sysUser.userName", userName);
+            formData.append("sysUser.enabled", enabled);
+            formData.append("sysUser.password", password);
+            if (confirm("是否確定儲存")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SaveSysUser","SysUser",new{Area="Admin"})',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            alert(result.message);
+                            window.location.href = '@Url.Action("Index","SysUser",new{Area="Admin"})';
+                        } else {
+                            alert(result.message);
+                        }
+                    }
+                });
+            };
+        });
+
+        $("#saveSubstituteButton").on('click', function() {
+            let substituteId = $("select[name='sysUserSubstitute.substituteId']").find("option:selected").val();
+            let sysUserSubstituteId = $("#sysUserSubstituteId").val();
+            let formData = new FormData();
+            formData.append("sysUserSubstitute.id", sysUserSubstituteId);
+            formData.append("sysUserSubstitute.sysUserId", @Model.id);
+            formData.append("sysUserSubstitute.substituteId", substituteId);
+            if (confirm("是否確定儲存")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SaveSysUserSubstitute","SysUser",new{Area="Admin"})',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            let changeId = result.successId;
+                            $("#sysUserSubstituteId").val(changeId);
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                    }
+                });
+            };
+        });
+
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: '',
+                center: 'title',
+                right: 'today prev next',
+            },
+            locale: 'zh-tw',
+            contentHeight: 500,
+            dayCellContent: function(arg) {
+                return arg.date.getDate();
+            },
+            events: [
+    @{
+        string eventValues = "";
+        if (Model.sysUserAskForLeave != null && Model.sysUserAskForLeave.Count > 0)
+        {
+            foreach (var item in Model.sysUserAskForLeave)
+            {
+                eventValues += "{";
+                eventValues += "title:'休假',color: '#FF8282',allDay: true,";
+                eventValues += "start:'" + item.startLeaveDate.ToString("yyyy-MM-dd") + "',";
+                eventValues += "id:'" + item.id + "'";
+                eventValues += "},";
+            }
+            eventValues.TrimEnd(',');
+        }
+    }
+    @Html.Raw(eventValues) ],
+            eventClick: function(info) {
+                console.log('日期:' + info.event.startStr);
+                $("#leaveDate").val(info.event.startStr)
+                $("#leaveId").val(info.event.id)
+                $("#deleteLeave").modal('show');
+            },
+            dateClick: function(info) {
+                let getDate = info.dateStr;
+                let eventLenght = calendar.getEvents().filter(x => x.startStr == getDate).length;
+                if (eventLenght == 0) {
+                    $("#leaveDate").val(info.dateStr);
+                    $("#createLeave").modal('show');
+
+                }
+            }
+        });
+
+        $("#openFullCalendar").on('click', function() {
+            calendar.render();
+        })
+
+        $("#createLeaveButton").on('click', function() {//新增
+            let formData = new FormData();
+            let leaveDate = $("#leaveDate").val();
+            formData.append("sysUserAskForLeave.sysUserId", @Model.id);
+            formData.append("sysUserAskForLeave.startLeaveDate", leaveDate);
+            formData.append("sysUserAskForLeave.endLeaveDate", leaveDate);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SaveSysUserAskForLeave","SysUser",new{Area="Admin"})',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    result = JSON.parse(result);
+                    if (result.success) {
+                        let SysUserAskForLeaveId = result.successId;
+                        calendar.addEvent(
+                            {
+                                title: '休假',
+                                start: leaveDate,
+                                allDay: true,
+                                color: '#FF8282',
+                                id: SysUserAskForLeaveId
+                            }
+                        );
+                        alert(result.message);
+                        $('#createLeave').modal('hide');
+                    } else {
+                        alert(result.message);
+                    }
+                }
+            });
+        });
+
+        $("#deleteLeaveButton").on('click', function() {//刪除
+            let formData = new FormData();
+            let leaveDate = $("#leaveDate").val();
+            let sysUserAskForLeaveId = $("#leaveId").val();
+            formData.append("sysUserAskForLeave.id", sysUserAskForLeaveId);
+            formData.append("sysUserAskForLeave.sysUserId", @Model.id);
+            formData.append("sysUserAskForLeave.startLeaveDate", leaveDate);
+            formData.append("sysUserAskForLeave.endLeaveDate", leaveDate);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SaveSysUserAskForLeave","SysUser",new{Area="Admin"})',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    result = JSON.parse(result);
+                    if (result.success) {
+                        calendar.getEventById(sysUserAskForLeaveId).remove();
+                        alert(result.message);
+                        $('#deleteLeave').modal('hide');
+                    } else {
+                        alert(result.message);
+                    }
+                }
+            });
+        });
+
+
+    });
+</script>
+
+
+

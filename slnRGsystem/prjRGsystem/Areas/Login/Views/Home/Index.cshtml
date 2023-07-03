@@ -1,0 +1,90 @@
+﻿<div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+        <div class="login-container">
+            <div class="center">
+                <h1>
+                    <i class="ace-icon fa fa-leaf green"></i>
+                    <span class="grey" id="id-text2">財產管理系統</span>
+                </h1>
+                <h4 class="blue" id="id-company-text">&copy; Taiwan ICDF</h4>
+            </div>
+
+            <div class="space-6"></div>
+
+            <div class="position-relative">
+                <div id="login-box" class="login-box visible widget-box no-border">
+                    <div class="widget-body">
+                        <div class="widget-main">
+
+                            <div class="space-6"></div>
+
+                            <form id="loginForm" name="loginForm" method="post" action="@Url.Action("UserLoginVerify","Home",new {Area = "Login"})">
+                                <fieldset>
+                                    <label class="block clearfix">
+                                        <span class="block input-icon input-icon-right">
+                                            <input name="userId" type="text" class="form-control" placeholder="Username" required  value="admin1"/>
+                                            <i class="ace-icon fa fa-user"></i>
+                                        </span>
+                                    </label>
+
+                                    <label class="block clearfix">
+                                        <span class="block input-icon input-icon-right">
+                                            <input name="pwd" type="password" class="form-control" placeholder="Password" value="111" required />
+                                            <i class="ace-icon fa fa-lock"></i>
+                                        </span>
+                                    </label>
+
+                                    <label class="block clearfix">
+                                        <span class="block input-icon input-icon-right">
+                                            <input name="validCode" type="text" class="form-control" placeholder="驗證碼" width="30" autocomplete="off" required value="00000"/>
+                                            <i class="ace-icon fa fa-lock"></i>
+                                        </span>
+                                    </label>
+
+                                    <label class="block clearfix">
+                                        <img id="code" src="@Url.Action("GetValidateCode","Home",new {Area = "Login"})" style="border: 1px solid #999;" />
+                                        <input id="newCaseNumberButton" value="更換驗證碼" type="button" class="btn btn-sm btn-primary" />
+                                    </label>
+
+                                    <div class="clearfix">
+
+                                        <button id="loginButton" name="loginButton" type="submit" class="width-35 pull-right btn btn-sm btn-primary">
+                                            <i class="ace-icon fa fa-key"></i>
+                                            <span class="bigger-110">登入</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="space-4"></div>
+                                </fieldset>
+                            </form>
+
+
+
+
+                        </div><!-- /.widget-main -->
+
+                    </div><!-- /.widget-body -->
+                </div><!-- /.login-box -->
+            </div><!-- /.position-relative -->
+
+
+        </div>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<script type="text/javascript">
+    $(function() {
+        $('body').on("click", '#newCaseNumberButton', function(e) {
+            var srcGet = $("#code").attr("src");
+            $.ajax({
+                type: 'GET',
+                dataType: "html",
+                url: '@Url.Action("GetValidateCode","Home",new {Area = "Login"})',
+                success: function(result) {
+                }
+            })
+            $("#code").attr("src", srcGet);
+        });
+
+    });
+</script>

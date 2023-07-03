@@ -1,0 +1,441 @@
+﻿@using prjRGsystem.Context
+@using prjRGsystem.Models.DbModels
+@using prjRGsystem.Extensions
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    UserContext userContext = httpContextAccessor.HttpContext.Session.GetObjectFromJson<UserContext>(UserContext.SESSION_NAME);
+}
+
+<!DOCTYPE html>
+
+<html lang="zh-tw">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="description" content="description" />
+    <link rel="icon" href="~/favicon.ico" type="image/x-icon" />
+    <title>榮記車業管理系統</title>
+
+    <link rel="stylesheet" href="~/assets/libs/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="~/css/style.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="~/assets/libs/jquery/dist/jquery-3.5.0.min.js"></script>
+    <link href='~/assets/libs/fullcalendar-5.11.2/main.css' rel='stylesheet' />
+    <script src='~/assets/libs/fullcalendar-5.11.2/main.js'></script>
+    <script src='~/assets/libs/fullcalendar-5.11.2/locales-all.js'></script>
+    <link rel="stylesheet" href="~/css/custom.min.css" />
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body data-theme="dark">
+    <style>
+        .text-themecolor {
+            color: #1e88e5;
+        }
+
+        @@media (min-width: 768px) {
+            .control-label {
+                text-align: right;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .control-label {
+                text-align: left;
+            }
+        }
+
+        .textarea-both {
+            resize: both;
+        }
+    </style>
+    <!-- ============================================================== -->
+    <!-- Preloader - style you can find in spinners.css -->
+    <!-- ============================================================== -->
+    <div class="preloader">
+        <svg class="tea lds-ripple" width="37" height="48" viewbox="0 0 37 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M27.0819 17H3.02508C1.91076 17 1.01376 17.9059 1.0485 19.0197C1.15761 22.5177 1.49703 29.7374 2.5 34C4.07125 40.6778 7.18553 44.8868 8.44856 46.3845C8.79051 46.79 9.29799 47 9.82843 47H20.0218C20.639 47 21.2193 46.7159 21.5659 46.2052C22.6765 44.5687 25.2312 40.4282 27.5 34C28.9757 29.8188 29.084 22.4043 29.0441 18.9156C29.0319 17.8436 28.1539 17 27.0819 17Z" stroke="#1e88e5" stroke-width="2"></path>
+            <path d="M29 23.5C29 23.5 34.5 20.5 35.5 25.4999C36.0986 28.4926 34.2033 31.5383 32 32.8713C29.4555 34.4108 28 34 28 34" stroke="#1e88e5" stroke-width="2"></path>
+            <path id="teabag" fill="#1e88e5" fill-rule="evenodd" clip-rule="evenodd" d="M16 25V17H14V25H12C10.3431 25 9 26.3431 9 28V34C9 35.6569 10.3431 37 12 37H18C19.6569 37 21 35.6569 21 34V28C21 26.3431 19.6569 25 18 25H16ZM11 28C11 27.4477 11.4477 27 12 27H18C18.5523 27 19 27.4477 19 28V34C19 34.5523 18.5523 35 18 35H12C11.4477 35 11 34.5523 11 34V28Z"></path>
+            <path id="steamL" d="M17 1C17 1 17 4.5 14 6.5C11 8.5 11 12 11 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#1e88e5"></path>
+            <path id="steamR" d="M21 6C21 6 21 8.22727 19 9.5C17 10.7727 17 13 17 13" stroke="#1e88e5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+    </div>
+    <!-- ============================================================== -->
+    <!-- Main wrapper - style you can find in pages.scss -->
+    <!-- ============================================================== -->
+    <div id="main-wrapper">
+
+        <!-- ============================================================== -->
+        <!-- Topbar header - style you can find in pages.scss -->
+        <!-- ============================================================== -->
+        <header class="topbar">
+            <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+                <div class="navbar-header">
+                    <!-- This is for the sidebar toggle which is visible on mobile only -->
+                    <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)">
+                        <i class="ti-menu ti-close"></i>
+                    </a>
+                    <!-- ============================================================== -->
+                    <!-- Logo -->
+                    <!-- ============================================================== -->
+                    <a class="navbar-brand" href="index.html">
+                        <!-- Logo icon -->
+                        <b class="logo-icon">
+                            <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                            <!-- Dark Logo icon -->
+                            <img src="~/assets/images/logo-icon.png" alt="homepage" class="dark-logo" />
+                            <!-- Light Logo icon -->
+                            <img src="~/assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />
+                        </b>
+                        <!--End Logo icon -->
+                        <!-- Logo text -->
+                        <span class="logo-text">
+                            <!-- dark Logo text -->
+                            <img src="~/assets/images/logo-text.png" alt="homepage" class="dark-logo" />
+                            <!-- Light Logo text -->
+                            <img src="~/assets/images/logo-light-text.png" class="light-logo" alt="homepage" />
+                        </span>
+                    </a>
+                    <!-- ============================================================== -->
+                    <!-- End Logo -->
+                    <!-- ============================================================== -->
+                    <!-- ============================================================== -->
+                    <!-- Toggle which is visible on mobile only -->
+                    <!-- ============================================================== -->
+                    <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)"
+                       data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <i class="ti-more"></i>
+                    </a>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End Logo -->
+                <!-- ============================================================== -->
+                <div class="navbar-collapse collapse" id="navbarSupportedContent">
+                    <!-- ============================================================== -->
+                    <!-- toggle and nav items -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav me-auto">
+                        <!-- This is  -->
+                        <li class="nav-item">
+                            <a class="nav-link sidebartoggler d-none d-md-block waves-effect waves-dark"
+                               href="javascript:void(0)"><i class="ti-menu"></i></a>
+                        </li>
+                    </ul>
+                    <!-- ============================================================== -->
+                    <!-- Right side toggle and nav items -->
+                    <!-- ============================================================== -->
+                    <ul class="navbar-nav">
+                        <!-- ============================================================== -->
+                        <!-- Profile -->
+                        <!-- ============================================================== -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle waves-effect waves-dark" href="#"
+                               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="~/assets/images/users/1.jpg" alt="user" width="30"
+                                     class="profile-pic rounded-circle" />
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end user-dd animated flipInY" style="width:350px;">
+                                <div class="d-flex no-block align-items-center p-3 bg-info text-white mb-2">
+                                    <div class="ms-2">
+                                        @{
+                                            //string departmentName = "";
+                                            string roleName = "";
+                                            //string email = "";
+                                            string userName = "";
+                                            if (userContext != null)
+                                            {
+                                                if (userContext.user != null)
+                                                {
+                                                    //email = userContext.user.email ?? "";
+                                                    userName = "-" + userContext.user.userName ?? "";
+                                                }
+                                                if (userContext.sysRoles != null)
+                                                {
+                                                    if (userContext.sysRoles[0] != null)
+                                                        roleName = userContext.sysRoles[0].roleName ?? "";
+
+                                                }
+                                                if (userContext.department != null)
+                                                    roleName = userContext.department.departmentName ?? "";
+                                            }
+                                                    //string title = (string.IsNullOrEmpty(departmentName) && string.IsNullOrEmpty(roleName)) ? "" : departmentName + "-" + roleName;
+                                        }
+                                        <h4 class="mb-0 text-white">@(roleName + userName)</h4>
+                                    </div>
+                                </div>
+                                <a class="dropdown-item" href='@Url.Action("UserLogOut","Home", new { Area = "Login"})'>
+                                    <i data-feather="log-out"
+                                       class="feather-sm text-danger me-1 ms-1"></i> 登出
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <aside class="left-sidebar">
+            <!-- Sidebar scroll-->
+            <div class="scroll-sidebar">
+                <!-- User profile -->
+                <div class="user-profile position-relative user_info_background">
+                    <!-- User profile image -->
+                    <div class="profile-img">
+                        <img src="~/assets/images/users/profile.png" alt="user" class="w-100" />
+                    </div>
+                    <!-- User profile text-->
+                </div>
+                <!-- End User profile text-->
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    @if (userContext != null && userContext.authorizedSysTasks != null && userContext.authorizedSysTasks.Count() > 0)
+                    {
+                        <ul id="sidebarnav">
+                            @foreach (SysTasks sysTasks in userContext.authorizedSysTasks)
+                            {
+                                string urlString = "";
+                                string areaName = sysTasks.areaName;
+                                string controllerName = sysTasks.controllerName;
+                                string actionName = (string.IsNullOrEmpty(sysTasks.actionName)) ? "" : sysTasks.actionName;
+                                bool hasChild = (sysTasks.childSysTask != null && sysTasks.childSysTask.Count > 0);
+                                if (areaName == "#") { urlString = "javascript:void(0)"; }
+                                else
+                                {
+                                    urlString = @Url.Action(actionName, controllerName, new { Area = areaName });
+                                }
+                                string aClass = hasChild ? " has-arrow" : "";
+
+                                <li class="sidebar-item">
+                                    <a href="@urlString" class="sidebar-link @aClass waves-effect waves-dark" aria-expanded="false">
+                                        <i class="mdi @sysTasks.iconName"></i>
+                                        <span class="hide-menu">@sysTasks.taskName</span>
+                                    </a>
+
+                                    @if (hasChild)
+                                    {
+                                        <ul aria-expanded="false" class="collapse  first-level">
+                                            @foreach (SysTasks secondSysTasks in sysTasks.childSysTask)
+                                            {
+                                                urlString = "";
+                                                areaName = secondSysTasks.areaName;
+                                                controllerName = secondSysTasks.controllerName;
+                                                actionName = (string.IsNullOrEmpty(secondSysTasks.actionName)) ? "" : secondSysTasks.actionName;
+                                                if (areaName == "#") { urlString = "javascript:void(0)"; }
+                                                else
+                                                {
+                                                    urlString = @Url.Action(actionName, controllerName, new { Area = areaName });
+                                                }
+                                                hasChild = (secondSysTasks.childSysTask != null && secondSysTasks.childSysTask.Count > 0);
+                                                aClass = hasChild ? " has-arrow" : "";
+
+                                                <li class="sidebar-item">
+                                                    <a href="@urlString" class="sidebar-link @aClass">
+                                                        <i class="mdi"></i>
+                                                        <span class="hide-menu">@secondSysTasks.taskName</span>
+                                                    </a>
+
+                                                    @if (hasChild)
+                                                    {
+                                                        <ul aria-expanded="false" class="collapse second-level">
+                                                            @foreach (SysTasks thirdSysTasks in secondSysTasks.childSysTask)
+                                                            {
+                                                                urlString = "";
+                                                                areaName = thirdSysTasks.areaName;
+                                                                controllerName = thirdSysTasks.controllerName;
+                                                                actionName = (string.IsNullOrEmpty(thirdSysTasks.actionName)) ? "" : thirdSysTasks.actionName;
+                                                                if (areaName == "#") { urlString = "javascript:void(0)"; }
+                                                                else
+                                                                {
+                                                                    urlString = @Url.Action(actionName, controllerName, new { Area = areaName });
+                                                                }
+                                                                hasChild = (thirdSysTasks.childSysTask != null && thirdSysTasks.childSysTask.Count > 0);
+                                                                aClass = hasChild ? " has-arrow" : "";
+
+                                                                <li class="sidebar-item">
+                                                                    <a href="@urlString" class="sidebar-link @aClass">
+                                                                        <i class="mdi"></i>
+                                                                        <span class="hide-menu">@thirdSysTasks.taskName</span>
+                                                                    </a>
+
+                                                                    @if (hasChild)
+                                                                    {
+                                                                        <ul aria-expanded="false" class="collapse second-level">
+                                                                            @foreach (SysTasks fourthSysTasks in thirdSysTasks.childSysTask)
+                                                                            {
+                                                                                urlString = "";
+                                                                                areaName = fourthSysTasks.areaName;
+                                                                                controllerName = fourthSysTasks.controllerName;
+                                                                                actionName = (string.IsNullOrEmpty(fourthSysTasks.actionName)) ? "" : fourthSysTasks.actionName;
+                                                                                if (areaName == "#") { urlString = "javascript:void(0)"; }
+                                                                                else
+                                                                                {
+                                                                                    urlString = @Url.Action(actionName, controllerName, new { Area = areaName });
+                                                                                }
+                                                                                hasChild = (fourthSysTasks.childSysTask != null && fourthSysTasks.childSysTask.Count > 0);
+                                                                                aClass = hasChild ? " has-arrow" : "";
+
+                                                                                <li class="sidebar-item">
+                                                                                    <a href="@urlString" class="sidebar-link @aClass">
+                                                                                        <i class="mdi mdi-border-vertical"></i>
+                                                                                        <span class="hide-menu">@fourthSysTasks.taskName</span>
+                                                                                    </a>
+
+                                                                                    @if (hasChild)
+                                                                                    {
+                                                                                        <ul aria-expanded="false" class="collapse second-level">
+                                                                                            @await Html.PartialAsync("~/Areas/Admin/Views/Shared/_MenuPartial.cshtml", fourthSysTasks.childSysTask)
+                                                                                        </ul>
+                                                                                    }
+                                                                                </li>
+
+                                                                            }
+                                                                        </ul>
+                                                                    }
+                                                                </li>
+
+                                                            }
+                                                        </ul>
+                                                    }
+                                                </li>
+
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+            <!-- Bottom points-->
+            <div class="sidebar-footer">
+                <!-- item-->
+                <a href="" class="link" data-bs-toggle="tooltip" data-bs-placement="top" title="蝦皮">
+                    <i class="me-2 mdi mdi-shopping"></i>
+                </a>
+                <!-- item-->
+                <a href="" class="link" data-bs-toggle="tooltip" data-bs-placement="top" title="Email">
+                    <i class="mdi mdi-gmail"></i>
+                </a>
+                <!-- item-->
+                <a href="authentication-login1.html" class="link" data-bs-toggle="tooltip" data-bs-placement="top"
+                   title="Logout"><i class="mdi mdi-power"></i></a>
+            </div>
+            <!-- End Bottom points-->
+        </aside>
+
+        <!-- ============================================================== -->
+        <!-- End Topbar header -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Page wrapper  -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- Bread crumb and right sidebar toggle -->
+        <!-- ============================================================== -->
+        <div class="page-wrapper">
+            <div class="row page-titles">
+                <div class="col-md-5 col-12 align-self-center">
+                    <h3 class="text-themecolor mb-0"><a href="@Url.Action("Index", "Dashboard", new { Area = "Admin",batch=DateTime.Now.AddYears(-1911).ToString("yyyMMdd") })">首頁</a></h3>
+                    <!-- <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">首頁</a></li>
+                    </ol>-->
+                </div>
+                <div class="col-md-7 col-12 align-self-center d-none d-md-block">
+                    <div class="d-flex mt-2 justify-content-end">
+                        <div class="d-flex me-3 ms-2">
+                            <div class="chart-text me-2">
+                                <h5 class="mb-0"><small>月業績</small></h5>
+                                <h3 class="mt-0 text-info">$58,356</h3>
+                            </div>
+                        </div>
+                        <div class="d-flex ms-2">
+                            <div class="chart-text me-2">
+                                <h5 class="mb-0"><small>年總額</small></h5>
+                                <h3 class="mt-0 text-primary">$865,012</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+                <!-- -------------------------------------------------------------- -->
+                <!-- Start Page Content -->
+                <!-- -------------------------------------------------------------- -->
+                @RenderBody()
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Container fluid  -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <!--footer class="footer">
+                榮記車業
+            </footer>-->
+        </div>
+        <!-- ============================================================== -->
+        <!-- End footer -->
+        <!-- ============================================================== -->
+        <!-- /.main-container -->
+        <!-- ============================================================== -->
+        <!-- End Page wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Wrapper -->
+    <!-- ============================================================== -->
+
+    <div class="chat-windows"></div>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="~/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- apps -->
+    <script src="~/js/app.min.js"></script>
+    <script src="~/js/app.init.dark.js"></script>
+    <script src="~/js/app-style-switcher.js"></script>
+    <!-- slimscrollbar scrollbar JavaScript -->
+    <script src="~/assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="~/assets/extra-libs/sparkline/sparkline.js"></script>
+    <!--Wave Effects -->
+    <script src="~/js/waves.js"></script>
+    <!--Menu sidebar -->
+    <script src="~/js/sidebarmenu.js"></script>
+    <!--Custom JavaScript -->
+    <script src="~/js/feather.min.js"></script>
+    <script src="~/js/custom.min.js"></script>
+    <script src="~/assets/libs/tinymce-4.9.7/tinymce.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script src="~/js/pages/forms/select2/select2.init.js"></script>
+    <script src="~/assets/extra-libs/treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="~/assets/libs/bootstrap/dist/js/BootstrapMenu.min.js"></script>
+    <script src="~/assets/libs/block-ui/jquery.blockUI.js"></script>
+    <script src="~/assets/extra-libs/block-ui/block-ui.js"></script>
+</body>
+</html>

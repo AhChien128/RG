@@ -1,0 +1,86 @@
+﻿@inject IHostEnvironment environment
+@{
+    string webType = "";
+    if (environment.IsProduction())
+    {
+        webType = "(正式機)";
+    }
+    else if (environment.IsDevelopment())
+    {
+        webType = "(測試機)";
+    }
+    else if (environment.IsStaging())
+    {
+        webType = "(模擬測試)";
+    }
+}
+<div class="auth-wrapper d-flex no-block justify-content-center align-items-center" no-repeat center center;">
+    <div class="auth-box p-4 bg-white rounded">
+        <div>
+            <div class="logo text-center">
+                <span class="db"><img src="~/img/RG.jpg" alt="logo" /></span>
+                <h3 class=" mb-3 mt-1" style="font-weight: bold;">評鑑委員評分系統@(webType)</h3>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <form id="loginForm" name="loginForm" method="post" action="@Url.Action("UserLoginVerify","Home",new {Area = "Login"})">
+                        <div class="mb-3 row">
+                            <div class="col-12">
+                                <input name="userId" class="form-control" type="text" placeholder="帳號" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-12">
+                                <input name="pwd" type="password" class="form-control" placeholder="密碼" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-12">
+                                <input name="validCode" class="form-control" type="hidden" placeholder="驗證碼" value="00000" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 row" hidden>
+                            <div class="col-4">
+                                <img id="code" src="@Url.Action("GetValidateCode","Home",new {Area = "Login"})" style="border: 1px solid #999;" />
+                            </div>
+                            <div class="col-4" style="align-items: center;">
+                                <input id="newCaseNumberButton" value="更換驗證碼" type="button" class="btn btn-sm btn-primary" />
+                            </div>
+                        </div>
+                        <div class="text-center ">
+                            <div class="col-xs-12">
+                                <button class="btn d-block w-100 btn-info  " type="submit">登入</button>
+                            </div>
+                        </div>
+                        <div class="text-center " hidden>
+                            <div class="col-xs-12">
+                                <label>or</label>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="text-center" hidden>
+                        <div class="col-xs-12">
+                            <a class="btn btn-outline-info w-100" href='@Url.Action("ConnectOAuthSSO", "OAuthSSO", new { Area = "Login"})'>SSO單一簽入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function() {
+        $('body').on("click", '#newCaseNumberButton', function(e) {
+            var srcGet = $("#code").attr("src");
+            $.ajax({
+                type: 'GET',
+                dataType: "html",
+                url: '@Url.Action("GetValidateCode","Home",new {Area = "Login"})',
+                success: function(result) {
+                }
+            })
+            $("#code").attr("src", srcGet);
+        });
+
+    });
+</script>

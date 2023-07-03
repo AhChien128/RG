@@ -1,0 +1,342 @@
+﻿@using prjRGsystem.Context
+@using prjRGsystem.Extensions
+@using prjRGsystem.Managers.DbManagers
+@using prjRGsystem.Models.DbModels
+@using prjRGsystem.Models.ViewModels
+@model SysRolesListViewModel
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    var criteria = ViewData["criteria"] as SysRolesManager.Criteria;
+    var model = Model as SysRolesListViewModel;
+    SysRoles? sysRoles = model.sysRole != null ? model.sysRole : new SysRoles();
+    //List<SysTasksBlack>? sysTasksBlack = model.sysTasksBlack != null ? model.sysTasksBlack : new List<SysTasksBlack>();
+    List<SysUsersRoles>? sysUsersRoles = model.sysUsersRoles != null ? model.sysUsersRoles : new List<SysUsersRoles>();
+    List<SysRolesTasks>? sysRolesTasks = model.sysRolesTasks != null ? model.sysRolesTasks : new List<SysRolesTasks>();
+    List<SysUser>? sysUsers = ViewData["sysUsers"] != null ? ViewData["sysUsers"] as List<SysUser> : new List<SysUser>();
+    List<SysTasks>? sysTasks = ViewData["sysTasks"] != null ? ViewData["sysTasks"] as List<SysTasks> : new List<SysTasks>();
+    Dictionary<long, List<SysTasksBlack>>? dicSysTasksBlack = ViewData["dicSysTasksBlack"] != null ? ViewData["dicSysTasksBlack"] as Dictionary<long, List<SysTasksBlack>> : new Dictionary<long, List<SysTasksBlack>>();
+    Dictionary<Int64, string?>? idAndDepartmentNames = ViewData["idAndDepartmentNames"] as Dictionary<Int64, string?>;
+    //List<long>? blockforSysRolesTasksIds= ViewData["blockforSysRolesTasksIds"]!= null ?ViewData["sysUsers"] as List<long> : new List<long>();;
+}
+@functions {
+    void PrepareTree(List<SysTasks>? sysTasks, Dictionary<long, List<SysTasksBlack>>? dicSysTasksBlack, Int64 parentTaskId = 0, string space = "", string number = "")
+    {
+        string spacePlus = space + "[space]";
+        if (sysTasks != null && sysTasks.Count > 0)
+        {
+            List<SysTasks>? fatherTasks = sysTasks.Where(m => m.parentTasksId == parentTaskId && m.taskActionId == "#").OrderBy(m => m.taskSort).ToList();
+            List<SysTasks>? menuTasks = sysTasks.Where(m => m.parentTasksId == parentTaskId && m.taskActionId != "#").OrderBy(m => m.taskSort).ToList();
+            List<SysTasks>? combineTasks = new List<SysTasks>();
+            combineTasks.AddRange(fatherTasks);
+            combineTasks.AddRange(menuTasks);
+            combineTasks = combineTasks.OrderBy(m => m.taskSort).ToList();
+            foreach (SysTasks data in combineTasks)
+            {
+
+                if (fatherTasks != null && fatherTasks.Count > 0 && fatherTasks.Contains(data))
+                {
+                    SysTasks fatherTask = data;
+                    string numberPlus = number + fatherTask.id + "-";
+                    string edit = fatherTask.id + "_Edit";
+                    string view = fatherTask.id + "_View";
+                    string delete = fatherTask.id + "_Delete";
+                    string add = fatherTask.id + "_Add";
+                    string audit = fatherTask.id + "_Audit";
+                    string report = fatherTask.id + "_Report";
+                    string admin = fatherTask.id + "_Admin";
+                    <div>
+                        <label class="">
+                            @Html.Raw(space.Replace("[space]","&emsp;&emsp;"))@fatherTask.taskName :
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace checkall permissions"> <span class="lbl">全選/全不選</span> &nbsp;
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@view" @(Model.permissions != null && Model.permissions.Contains(view)?"checked":"")>
+                            <span class="lbl">查詢/瀏覽</span> &nbsp;
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@add" @(Model.permissions != null && Model.permissions.Contains(add)?"checked":"")>
+                            <span class="lbl">新增</span> &nbsp;
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@edit" @(Model.permissions != null && Model.permissions.Contains(edit)?"checked":"")>
+                            <span class="lbl">修改</span> &nbsp;
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@audit" @(Model.permissions != null && Model.permissions.Contains(audit)?"checked":"")>
+                            <span class="lbl">審核</span> &nbsp;
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@report" @(Model.permissions != null && Model.permissions.Contains(report)?"checked":"")>
+                            <span class="lbl">報表</span> &nbsp;
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@admin" @(Model.permissions != null && Model.permissions.Contains(admin)?"checked":"")>
+                            <span class="lbl">系統管理員</span> &nbsp;
+                        </label>
+                        <label class="pos-rel">
+                            <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@delete" @(Model.permissions != null && Model.permissions.Contains(delete)?"checked":"")>
+                            <span class="lbl">刪除</span> &nbsp;
+                        </label>
+                        <br />
+
+                        @{
+                            PrepareTree(sysTasks, dicSysTasksBlack, fatherTask.id, spacePlus, numberPlus);
+                        }
+
+                    </div>
+                }
+                if (menuTasks != null && menuTasks.Count > 0 && menuTasks.Contains(data))
+                {
+                    SysTasks menuTask = data;
+                    string numberPlus = number + menuTask.id;
+                    string edit = menuTask.id + "_Edit";
+                    string view = menuTask.id + "_View";
+                    string delete = menuTask.id + "_Delete";
+                    string add = menuTask.id + "_Add";
+                    string audit = menuTask.id + "_Audit";
+                    string report = menuTask.id + "_Report";
+                    string admin = menuTask.id + "_Admin";
+                    <label class="">
+                        @Html.Raw(space.Replace("[space]","&emsp;&emsp;"))@menuTask.taskName :
+                    </label>
+                    <label class="pos-rel">
+                        <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@view" @(Model.permissions != null && Model.permissions.Contains(view)?"checked":"")>
+                        <span class="lbl">查詢/瀏覽</span> &nbsp;
+                    </label>
+                    <label class="pos-rel">
+                        <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@add" @(Model.permissions != null && Model.permissions.Contains(add)?"checked":"")>
+                        <span class="lbl">新增</span> &nbsp;
+                    </label>
+                    <label class="pos-rel">
+                        <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@edit" @(Model.permissions != null && Model.permissions.Contains(edit)?"checked":"")>
+                        <span class="lbl">修改</span> &nbsp;
+                    </label>
+                    <label class="pos-rel">
+                        <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@audit" @(Model.permissions != null && Model.permissions.Contains(audit)?"checked":"")>
+                        <span class="lbl">審核</span> &nbsp;
+                    </label>
+                    <label class="pos-rel">
+                        <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@report" @(Model.permissions != null && Model.permissions.Contains(report)?"checked":"")>
+                        <span class="lbl">報表</span> &nbsp;
+                    </label>
+                    <label class="pos-rel">
+                        <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@admin" @(Model.permissions != null && Model.permissions.Contains(admin)?"checked":"")>
+                        <span class="lbl">系統管理員</span> &nbsp;
+                    </label>
+
+                    <label class="pos-rel">
+                        <input type="checkbox" number="@numberPlus" class="ace tasks permissions" value="@delete" @(Model.permissions != null && Model.permissions.Contains(delete)?"checked":"")>
+                        <span class="lbl">刪除</span> &nbsp;
+                    </label>
+                    <br />
+
+                    if (dicSysTasksBlack != null)
+                    {
+                        foreach (var a in dicSysTasksBlack)
+                        {
+                            int i = 0;
+                            if (data.id == a.Key)
+                            {
+                                <label class="">
+                                    @Html.Raw(space.Replace("[space]","&emsp;&emsp;"))--隱藏 :
+                                </label>
+                                foreach (var s in a.Value)
+                                {
+                                    string actionName = s.actionName;
+                                    string blackMenu = menuTask.id + "_" + actionName;
+                                    i++;
+                                    <label class="pos-rel">
+                                        <input type="checkbox" number="" class="ace tasks permissions" value="@blackMenu" @(Model.hasBlackCheck != null && Model.hasBlackCheck.Contains(actionName)?"checked":"")>
+                                        <span class="lbl">@s.actionName</span> &nbsp;
+                                    </label>
+                                    if (i == a.Value.Count)
+                                    {
+                                        <br />
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+<script type="text/javascript">
+    $(function() {
+        $("#saveButton").click(function() {
+            let formData = new FormData();
+
+            let roleName = $("#roleName").val();
+            if (roleName.trim() == "") {
+                alert("請輸入角色名稱");
+                return;
+            }
+            formData.append("roleName", roleName);
+
+            let sysRolesId = $("#sysRolesId").val();
+            formData.append("sysRolesId", sysRolesId);
+
+            let sysUserIds = "";
+            $(".user").each(function() {
+                if (this.checked) {
+                    sysUserIds += $(this).val() + ","
+                }
+            });
+            $("#sysUserIds").val(sysUserIds);
+            formData.append("sysUserIds", sysUserIds);
+
+            let sysTasksString = "";
+            $(".tasks").each(function() {
+                if (this.checked) {
+                    sysTasksString += $(this).val() + ","
+                }
+            });
+            $("#sysTasksString").val(sysTasksString);
+            formData.append("sysTasksString", sysTasksString);
+
+
+
+            if (confirm("是否確定儲存")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Save","SysRoles",new{Area="Admin"})',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                        window.location.href = '@Url.Action("Index", "SysRoles", new { Area = "Admin"})';
+                    }
+                });
+            }
+        });
+
+        $("#cancel").click(function() {
+            window.history.back();
+        });
+
+        $(".checkall").click(function() {
+            let checkNumber = $(this).attr("number");
+            if (this.checked) {
+                $(".permissions").each(function() {
+                    let number = this.getAttribute("number");
+                    if (number.includes(checkNumber)) {
+                        this.checked = true;
+                    }
+                });
+            }
+            if (!this.checked) {
+                $(".permissions").each(function() {
+                    let number = this.getAttribute("number");
+                    if (number.includes(checkNumber)) {
+                        this.checked = false;
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<div class="page-content">
+    <div class="col-12 card">
+        <div class="border-bottom title-part-padding card-header">
+            <h4 class="mb-0">角色權限資訊</h4>
+        </div>
+        <div class="card-body">
+            <form action="#">
+                <div class="form-body">
+                    <div class="form-group row mb-3">
+                        <label class="col-md-4 control-label" style="text-align:right;">角色名稱：</label>
+                        <div class="col-md-3">
+                            <input type="text" id="roleName" class="form-control" placeholder="" name="criteria.roleName" value="@sysRoles.roleName">
+                            <input type="hidden" id="sysRolesId" value="@Model.sysRolesId" />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-md-4 control-label" style="text-align:right;">角色權限：</label>
+                        <div class="col-md-8 mb-3">
+                            <div>
+                                @{
+                                    PrepareTree(sysTasks, dicSysTasksBlack);
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-md-4 control-label" style="text-align:right;">帳號：</label>
+                        <div class="col-md-8 mb-3">
+                            <div>
+                                @{
+                                    List<Int64>? selectedSysUserIds = sysUsersRoles.Select(m => m.sysUsersId).ToList();
+                                    if (sysUsers != null && sysUsers.Count > 0)
+                                    {
+                                        Dictionary<Int64, List<SysUser>>? departmentIdAndSysUsers = sysUsers.OrderBy(m => m.userDepartmentId).GroupBy(m => m.userDepartmentId).ToDictionary(m => m.Key, k => k.ToList());
+                                        foreach (var departmentId in departmentIdAndSysUsers.Keys)
+                                        {
+                                            string? departmentName = "";
+                                            if (departmentId > 0 && idAndDepartmentNames != null && idAndDepartmentNames.ContainsKey(departmentId))
+                                                departmentName = string.IsNullOrEmpty(idAndDepartmentNames[departmentId]) ? "" : idAndDepartmentNames[departmentId];
+                                            if (!string.IsNullOrEmpty(departmentName))
+                                                departmentName += "：";
+                                            List<SysUser> groupUsers = departmentIdAndSysUsers[departmentId];
+                                            int rowCount = 0;
+                                            <div>
+                                                <label class="">
+                                                    @departmentName<br />
+                                                    @foreach (SysUser groupUser in groupUsers)
+                                                    {
+                                                        rowCount++;
+
+                                                        <label class="pos-rel">
+                                                            @if (selectedSysUserIds.Contains(groupUser.id))
+                                                            {
+                                                                <input type="checkbox" class="ace user" value="@groupUser.id" checked>
+                                                            }
+                                                            else
+                                                            {
+                                                                <input type="checkbox" class="ace user" value="@groupUser.id">
+                                                            }
+                                                            <span class="lbl">@groupUser.userName</span> &nbsp;
+                                                        </label>
+                                                        if (rowCount >= 5)
+                                                        {
+                                                            <br />
+                                                            rowCount = 0;
+                                                        }
+                                                    }
+
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-bottom title-part-padding mb-3"></div>
+                    <div class="form-actions">
+                        <div class="text-center mb-3">                            
+                            <button type="button" id="saveButton" class="btn btn waves-effect waves-light btn-info mb-1">儲存</button>
+                            <button type="reset" id="cancel" class="btn btn waves-effect waves-light btn-secondary mb-1">取消</button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="sysUserIds" name="saveData.sysUserIds" value="" />
+                <input type="hidden" id="sysTasksString" name="saveData.sysRoleTasks" value="" />
+            </form>
+
+        </div>
+    </div>
+</div>

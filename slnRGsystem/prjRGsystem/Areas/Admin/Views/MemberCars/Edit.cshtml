@@ -1,0 +1,99 @@
+﻿@using prjRGsystem.Models.DbModels;
+@model MemberCars
+@{
+    Member? member = ViewData["name"] as Member ?? new();
+}
+<script type="text/javascript">
+    $(function () {
+        //儲存
+        $('#save').click(function () {
+            let message = '';
+            let id = $('#id').val();
+            let brand = $('#brand').val();
+            let carNumber = $('#carNumber').val();
+            let carCategroy = $('#carCategroy').val();
+            let memberID = $('#memberID').val();
+            let sex = $("input[name='putOption.sex']:checked").val();
+            let formData = new FormData();
+            formData.append("id", id);
+            formData.append("brand", brand);
+            formData.append("carNumber", carNumber);
+            formData.append("carCategroy", carCategroy);
+            formData.append("memberID", memberID);
+            if (brand == '')
+                message += "請輸入廠牌\r\n";
+            if (carNumber == '')
+                message += "請輸入車牌\r\n";
+            if (carCategroy == '')
+                message += "請輸入車款\r\n";
+            if (message.length > 0) {
+                alert(message);
+                retuen;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Save", "MemberCars", new { Area = "Admin" })',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    result = JSON.parse(result);
+                    let id = result.id;
+                    alert(result.message);
+                    if (result.success) {
+                        window.location.href = '@Url.Action("Edit", "MaintainClient", new { Area = "Admin" })?id=' + id;
+                    }
+                    else {
+                        alert(result.message);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form class="" id="form">
+                    <div class="form">
+                        <label><span class="ps-3">@(member.name)-車輛資訊</span></label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="putOption.brand" class="form-control border border-info" placeholder="品牌" value="@(Model.brand)" id="brand">
+                        <label>
+                            <span class="ps-3">品牌</span>
+                        </label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="hidden" value="@(Model.id)" name="putOption.id" id="id" />
+                        <input type="hidden" value="@(member.id)" name="putOption.memberID" id="memberID" />
+                        <input type="text" name="putOption.carNumber" id="carNumber" class="form-control border border-info" placeholder="車牌" value="@(Model.carNumber)">
+                        <label>
+                            <span class="ps-3">車牌</span>
+                        </label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="putOption.carCategroy" id="carCategroy" class="form-control border border-info" placeholder="車款" value="@(Model.carCategroy)">
+                        <label>
+                            <span class="ps-3">車款</span>
+                        </label>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-md-flex align-items-center mt-3">
+                            <div class="ms-auto mt-3 mt-md-0">
+                                <a class="btn btn-info font-weight-medium rounded-pill px-4" id="save">
+                                    <div class="d-flex align-items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send feather-sm fill-white me-2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                        送出
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

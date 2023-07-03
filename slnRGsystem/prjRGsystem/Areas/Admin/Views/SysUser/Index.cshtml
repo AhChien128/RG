@@ -1,0 +1,124 @@
+﻿@using X.PagedList;
+@using prjRGsystem.Services
+@using prjRGsystem.Managers.DbManagers
+@using prjRGsystem.Models.DbModels
+@using prjRGsystem.Models
+@using prjRGsystem.Models.ViewModels
+@inject RolePrivilegeService rolePrivilegeService
+@model IPagedList<SysUser>
+@{
+    var criteria = ViewData["criteria"] as SysUserManager.Criteria;
+    if (criteria == null)
+    {
+        criteria = new SysUserManager.Criteria();
+    }
+    var sysDepartment = ViewData["sysDepartment"] as List<SysDepartment>;
+    bool? isAdmin = ViewData != null ? ViewData["isAdmin"] as bool? : null;
+
+}
+<script type="text/javascript">
+    $(function() {
+        $("button[name='delSysUserBtn']").click(function() {
+            let sysUsertId = $(this).siblings("input[name='sysUserId']").val();
+
+            if (confirm("是否確定刪除")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Removed","SysUser",new{Area="Admin"})',
+                    data: { id: sysUsertId },
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                        window.location.href = '/Admin/SysUser';
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <div class="mb-2">
+                <a type="button" class="btn btn-sm waves-effect waves-light btn-info" href='@Url.Action("Edit", "SysUser", new { Area = "Admin" , id = 0 })'>
+                    新增
+                </a>
+            </div>
+
+            <table class="table stylish-table v-middle mb-0 no-wrap">
+                <thead>
+                    <tr>
+                        <th style="width:20%">序號</th>
+                        <th style="width:20%">姓名</th>
+                        <th style="width:20%">帳號</th>
+                        <th style="width:20%">是否啟用</th>
+                        <th style="width:20%">功能</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model != null)
+                        {
+                            int count = (Model.PageNumber - 1) * Model.PageSize;
+                            foreach (var item in Model)
+                            {
+                                count++;
+                                string departmentName = "";
+                                string substituteName = "";
+                                if (item.userDepartment != null)
+                                {
+                                    departmentName = item.userDepartment.departmentName == null ? "" : item.userDepartment.departmentName;
+                                }
+                                if (item.sysUserSubstitute != null)
+                                {
+                                    foreach (var substitute in item.sysUserSubstitute)
+                                    {
+                                        if (substitute.sysUser != null)
+                                        {
+                                            if (substituteName != "")
+                                            {
+                                                substituteName += "<br />";
+                                            }
+                                            substituteName += substitute.sysUser.userName + ",";
+                                        }
+                                    }
+                                    substituteName = substituteName.TrimEnd(',');
+                                }
+                                <tr>
+                                    <td>@count</td>
+                                    <td>@item.userName</td>
+                                    <td>@item.userId</td>
+                                    <td>@(item.enabled ? "啟用" : "停用")</td>
+                                    <td>
+                                        @{
+                                            if (rolePrivilegeService.IsEdit())
+                                            {
+                                                <button type="button" class="btn btn-sm waves-effect waves-light btn-info mb-1" onclick="location.href='@Url.Action("Edit","SysUser",new {id=@item.id})'">變更密碼</button>
+                                            }
+                                            if (rolePrivilegeService.IsRemoved())
+                                            {
+                                                <button name="delSysUserBtn" class="btn btn-sm waves-effect waves-light btn-danger mb-1">刪除</button>
+                                            }
+                                        }
+                                        <input type="hidden" name="sysUserId" value="@item.id" hidden />
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        @{
+            if (Model == null || Model.Count == 0)//查無資料
+            {
+                <div style="text-align: center">查無資料</div>
+            }
+        }
+    </div>
+</div>

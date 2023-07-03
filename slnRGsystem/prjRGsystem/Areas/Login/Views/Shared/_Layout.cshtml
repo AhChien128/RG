@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <title>Login Page - Ace Admin</title>
+
+    <meta name="description" content="User login page" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <link rel="stylesheet" href="~/css/style.min.css" />
+
+    <link rel="stylesheet" href="~/assets/font-awesome/4.5.0/css/font-awesome.min.css" />
+    <script src="~/assets/libs/jquery/dist/jquery-3.5.0.min.js"></script>
+</head>
+<body class="login-layout light-login">
+    <div class="main-container">
+        <div class="main-content">
+            @RenderBody()
+        </div>
+    </div>
+
+    @if (TempData["alertMessage"] != null)
+    {
+        <script type="text/javascript">
+            var message = "@Html.Raw(@TempData["alertMessage"])";
+            alert(message);
+        </script>
+    }
+
+    <script type="text/javascript">
+        if ('ontouchstart' in document.documentElement) document.write("<script src='~/assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+    </script>
+    <script src="~/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

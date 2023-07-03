@@ -1,0 +1,171 @@
+﻿@using prjRGsystem.Models.DbModels;
+@model Member
+<script type="text/javascript">
+    $(function () {
+        //儲存
+        $('#save').click(function () {
+            let message = '';
+            let id = $('#id').val();
+            let name = $('#name').val();
+            let phoneNumber = $('#phoneNumber').val();
+            let sex = $("input[name='putOption.sex']:checked").val();
+            let formData = new FormData();
+            formData.append("id", id);
+            formData.append("name", name);
+            formData.append("phoneNumber", phoneNumber);
+            formData.append("sex", sex);
+            if (name == '')
+                message += "請輸入姓名\r\n";
+            if (phoneNumber == '')
+                message += "請輸入電話\r\n";
+            if (message.length > 0) {
+                alert(message);
+                retuen;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Save", "MaintainClient", new { Area = "Admin" })',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    result = JSON.parse(result);
+                    let id = result.id;
+                    alert(result.message);
+                    if (result.success) {
+                        window.location.href = '@Url.Action("Index", "MaintainClient", new { Area = "Admin" })';
+                    }
+                }
+            });
+        });
+    });
+    //刪除
+    function deleteCar(id) {
+        if (confirm("是否確定刪除")) {
+            let Memberid = $('#id').val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Removed","MemberCars",new{Area="Admin"})',
+                data: { id: id },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    if (result.success) {
+                        alert(result.message);
+                    } else {
+                        alert(result.message);
+                    }
+                    window.location.href = '@Url.Action("Edit","MaintainClient",new{Area="Admin"})';
+                }
+            });
+        }
+    }
+
+</script>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <form class="" id="form">
+                    <div class="form-floating mb-3">
+                        <input type="hidden" value="@(Model.id)" name="putOption.id" id="id" />
+                        <input type="text" name="putOption.name" id="name" class="form-control border border-info" placeholder="姓名" value="@(Model.name)">
+                        <label>
+                            <span class="ps-3">姓名</span>
+                        </label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" name="putOption.phoneNumber" id="phoneNumber" class="form-control border border-info" placeholder="電話" value="@(Model.phoneNumber)">
+                        <label>
+
+                            <span class="ps-3">電話</span>
+                        </label>
+                    </div>
+                    @{
+                        if (Model.id != 0)
+                        {
+                            <div class="row py-2">
+                                <div class="col-lg-12 d-flex align-items-stretch">
+                                    <div class="card w-100">
+                                        <div class="card-body">
+                                            <div class="month-table">
+                                                <div class="table-responsive mt-3">
+                                                    <div style="text-align:right;">
+                                                        <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "MemBerCars", new { Area = "Admin",memberID=Model.id , id = 0})">新增</a>
+                                                    </div>
+
+                                                    <table class="table stylish-table v-middle mb-0 no-wrap" style="text-align:center;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="border-0 text-muted fw-normal">項次</th>
+                                                                <th class="border-0 text-muted fw-normal">品牌</th>
+                                                                <th class="border-0 text-muted fw-normal">車款</th>
+                                                                <th class="border-0 text-muted fw-normal">車號</th>
+                                                                <th class="border-0 text-muted fw-normal">功能</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                int rowindex = 0;
+                                                                if (Model.memberCars != null && Model.memberCars.Count > 0)
+                                                                {
+                                                                    foreach (MemberCars memberCars in Model.memberCars)
+                                                                    {
+                                                                        rowindex++;
+                                                                        <tr>
+                                                                            <td>
+                                                                                @(rowindex).
+                                                                            </td>
+                                                                            <td>
+                                                                                @(memberCars.brand)
+                                                                            </td>
+                                                                            <td>
+                                                                                @(memberCars.carCategroy)
+                                                                            </td>
+                                                                            <td>
+                                                                                @(memberCars.carNumber)
+                                                                            </td>
+                                                                            <td>
+                                                                                <a type="button" class="btn btn-sm btn-info mb-1" href='@Url.Action("Edit", "MemberCars", new { Area = "Admin",memberID=Model.id , id = memberCars.id })'>修改</a>
+                                                                                <button class="btn btn-sm btn-danger mb-1 removed" onclick="deleteCar(@memberCars.id)" type="button">刪除</button>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    <tr style="text-align:center">
+                                                                        <td colspan="4" style="color:red">尚無車輛</td>
+                                                                    </tr>
+                                                                }
+
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        }
+                    }
+                    <div class="col-12">
+                        <div class="d-md-flex align-items-center mt-3">
+                            <div class="ms-auto mt-3 mt-md-0">
+                                <a class="btn btn-info font-weight-medium rounded-pill px-4" id="save">
+                                    <div class="d-flex align-items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send feather-sm fill-white me-2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                        送出
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

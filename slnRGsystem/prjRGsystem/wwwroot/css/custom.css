@@ -1,0 +1,131 @@
+body {
+    font-size: 0.9875rem;
+    font-weight: 400;
+    color: #17252c;
+}
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
+    color: #051a24;
+}
+h4, .h4 {
+    font-size: 1.175rem;
+}
+h5, .h5 {
+    font-size: 1.05rem;
+}
+h6, .h6 {
+    font-size: 0.925rem;
+}
+.blockquote-footer {
+    color: #17252d;
+}
+.figure-caption {
+    color: #17252d;
+}
+.table {
+    color: #17252c;
+}
+.form-text {
+    font-size: 0.925em;
+    color: #a1aab2;
+}
+.form-control {
+    font-size: 0.9875rem;
+    color: #04162a;
+}
+.form-control:focus {
+    color: #04162a;
+}
+.form-control::placeholder {
+    color: #1c252d;
+}
+.form-control::file-selector-button {
+    color: #04162a;
+}
+.form-control::-webkit-file-upload-button {
+    color: #04162a;
+}
+.form-control-plaintext {
+    color: #17252c;
+}
+.form-select {
+    font-size: 0.9875rem;
+    color: #04162a;
+}
+.input-group-text {
+    font-size: 0.9875rem;
+    color: #04162a;
+}
+.btn {
+    color: #17252c;
+    font-size: 0.9875rem;
+}
+.btn:hover {
+    color: #17252c;
+}
+.btn-secondary {
+    color: #fff;
+}
+.btn-danger,
+.btn-primary,
+.btn-info,
+.btn-warning,
+.btn-success {
+    color: #fff;
+}
+
+.badge {
+    font-size: 0.80rem;
+}
+
+.sidebar-nav ul .sidebar-item .sidebar-link {
+    font-size: 17px;
+}
+.left-sidebar {
+    width: 260px;
+}
+.text-secondary {
+    color: #1c252d !important;
+}
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link i, #main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link i {
+    color: #495b64;
+}
+#main-wrapper[data-layout="vertical"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link, #main-wrapper[data-layout="horizontal"] .left-sidebar[data-sidebarbg="skin6"] .sidebar-nav ul .sidebar-item .sidebar-link {
+    color: #102d3b;
+}
+
+
+.btn-danger:hover, .btn-danger:focus, .btn-danger.disabled, .btn-danger:disabled, .btn-danger.active,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.disabled,
+.btn-primary:disabled,
+.btn-primary.active,
+.btn-info:hover,
+.btn-info:focus,
+.btn-info.disabled,
+.btn-info:disabled,
+.btn-info.active,
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning.disabled,
+.btn-warning:disabled,
+.btn-warning.active,
+.btn-success:hover,
+.btn-success:focus,
+.btn-success.disabled,
+.btn-success:disabled,
+.btn-success.active {
+    color: #fff;
+}
+
+.card .card-title {
+    font-size: 20px;
+}
+
+form label {
+    font-size: 17px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #04162a;
+}
