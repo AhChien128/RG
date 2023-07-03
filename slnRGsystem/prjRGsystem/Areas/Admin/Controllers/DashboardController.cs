@@ -25,7 +25,10 @@ namespace prjRGsystem.Areas.Admin.Controllers
 
             return View();
         }
-
+        public async Task<IActionResult> Edit()
+        { 
+        return View();
+        }
 
         /// <summary>
         /// 取得 UserContext 資訊 (可能需要搬移至共用)

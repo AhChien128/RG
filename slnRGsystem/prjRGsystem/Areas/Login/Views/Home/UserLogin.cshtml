@@ -14,12 +14,12 @@
         webType = "(模擬測試)";
     }
 }
-<div class="auth-wrapper d-flex no-block justify-content-center align-items-center" no-repeat center center;">
-    <div class="auth-box p-4 bg-white rounded">
+<div class="auth-wrapper d-flex no-block justify-content-center align-items-center" no-repeat center center;" style="background:url(../../assets/images/background/login-register.jpg) no-repeat center center; background-size: cover;">
+    <div class="auth-box p-4 bg-white rounded" >
         <div>
             <div class="logo text-center">
                 <span class="db"><img src="~/img/RG.jpg" alt="logo" /></span>
-                <h3 class=" mb-3 mt-1" style="font-weight: bold;">評鑑委員評分系統@(webType)</h3>
+                <h3 class=" mb-3 mt-1" style="font-weight: bold;">榮記車業管理系統@(webType)</h3>
             </div>
             <div class="row">
                 <div class="col-12">
@@ -52,17 +52,7 @@
                                 <button class="btn d-block w-100 btn-info  " type="submit">登入</button>
                             </div>
                         </div>
-                        <div class="text-center " hidden>
-                            <div class="col-xs-12">
-                                <label>or</label>
-                            </div>
-                        </div>
                     </form>
-                    <div class="text-center" hidden>
-                        <div class="col-xs-12">
-                            <a class="btn btn-outline-info w-100" href='@Url.Action("ConnectOAuthSSO", "OAuthSSO", new { Area = "Login"})'>SSO單一簽入</a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
