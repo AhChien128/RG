@@ -1,0 +1,99 @@
+﻿@using X.PagedList
+@using prjRGsystem.Models.ViewModels
+@model ViewCurrentPage
+
+@{
+    int currentPageNumber = Model.PageNumber;
+    int pageCount = Model.PageCount;
+    var nonce = Context.Items["nonce"] as string;
+}
+<style type="text/css">
+    a.disabled {
+        pointer-events: none; /* 阻止点击事件 */
+        color: gray; /* 改变链接的颜色 */
+        text-decoration: none; /* 可选：去除链接的下划线效果 */
+    }
+</style>
+<script nonce="@nonce">
+    $(function () {
+        var pageNumber = @(currentPageNumber);
+        var pageCount = @(pageCount);
+        var prPage = document.getElementById("prPage");
+        var ntPage = document.getElementById("ntPage");
+        if (pageNumber === 1) {
+            $(".firstPage").attr("disabled", true).css("pointer-events", "none");
+        }
+        if (pageNumber === pageCount || pageCount === 0) {
+            $(".lastPage").attr("disabled", true).css("pointer-events", "none");
+        }
+    });
+</script>
+@*@{
+    string strCurrentPage = "目前第";
+    string strPage = "頁";
+    string strTotalPage = "共有";
+    string strFirstPage = "第一頁";
+    string strPrevious = "上一頁";
+    string strNextPage = "下一頁";
+    string strLastPage = "最末頁";
+    string strToPage = "跳至";
+}
+*@@*<div class="row">
+    <div class="col-12 col-md-6">
+        @(strCurrentPage) <span class="list-footer-num">@(currentPageNumber)</span> @(strPage)，@(strTotalPage) <span class="list-footer-num">@(pageCount < 1 ? 1 : pageCount)</span> @(strPage)
+    </div>
+    <div class="col-12 col-md-6 ">
+        <nav>
+            <ul class="pagination">
+                <li>
+                    <label id="firstPage" class="page-item firstPage" page="1">@(strFirstPage)</label>
+                </li>
+                <li>
+                    <a id="prPage" class="page-item firstPage" page="@(Model.PageNumber!=0?(Model.PageNumber-1):1)">@(strPrevious)</a>
+                </li>
+                <li>
+                    <label id="ntPage" class="page-item lastPage" page="@(Model.PageNumber!=0?(Model.PageNumber+1):1)">@(strNextPage)</label>
+                </li>
+                <li>
+                    <label id="lastPage" class="page-item lastPage" page="@Model.PageCount">@(strLastPage)</label>
+                </li>
+                <li>
+                    @(strToPage)
+                    <select tabindex="33" name="page" id="currentPageChange">
+                        @{
+                            for (int i = 1; i <= pageCount; i++)
+                            {
+                                <!option @(currentPageNumber == i ? "selected" : "") value="@(i)">@(i)</!option>
+                            }
+                        }
+                    </select>
+                    @(strPage)
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+*@
+
+
+<div class="dfootable-pagination-wrapper" id="default_order_paginate">
+    <div class="pagination justify-content-center">
+        目前第 <span class="list-footer-num">@(currentPageNumber)</span> 頁，共有 <span class="list-footer-num">@(pageCount < 1 ? 1 : pageCount)</span> 頁
+    </div>
+    <div>
+    <ul class="pagination justify-content-center">
+        <li class="paginate_button page-item previous">
+            <a id="prPage" class="page-link @(Model.PageNumber - 1 < 1 ?"disabled" : "")" page="@(Model.PageNumber!=0?(Model.PageNumber-1):1)">上一頁</a>
+        </li>
+        @{
+            for (int i = 1; i <= pageCount; i++)
+            {
+                <li class="paginate_button page-item "><a class="page-link" page="@(i)">@i</a></li>
+            }
+        }
+        <li class="paginate_button page-item next">
+            <a id="ntPage" class="page-link @(Model.PageNumber + 1 > Model.PageCount ?"disabled" : "")" page="@(Model.PageNumber!=0?(Model.PageNumber+1):1)">下一頁</a>
+        </li>
+        </ul>
+    </div>
+</div>

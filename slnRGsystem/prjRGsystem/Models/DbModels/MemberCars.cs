@@ -28,6 +28,9 @@ namespace prjRGsystem.Models.DbModels
         /// </summary>
         [Display(Name = "品牌")]
         public string? brand { get; set; }
+        [Display(Name ="客戶資訊")]
+        [NotMapped]
+        public Member? member { get; set; }
 
     }
 }

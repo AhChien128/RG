@@ -3,6 +3,7 @@ using prjRGsystem.Attributes;
 using prjRGsystem.Context;
 using prjRGsystem.Extensions;
 using prjRGsystem.Models.DbModels;
+using prjRGsystem.Services.DbServices;
 
 namespace prjRGsystem.Areas.Admin.Controllers
 {
@@ -11,25 +12,23 @@ namespace prjRGsystem.Areas.Admin.Controllers
     {
         private readonly ISession? session;
         private readonly ILogger<DashboardController> logger;
-        public DashboardController(IHttpContextAccessor _httpContextAccessor, ILogger<DashboardController> _logger)
+        private readonly FixItemsService fixItemsService;
+        public DashboardController(IHttpContextAccessor _httpContextAccessor, ILogger<DashboardController> _logger, FixItemsService _fixItemsService)
         {
             if (_httpContextAccessor.HttpContext is not null)
                 session = _httpContextAccessor.HttpContext.Session;
             logger = _logger;
+            fixItemsService = _fixItemsService;
         }
         public IActionResult Index()
         {
             UserContext userContext = GetUserLogin() ?? new();
             SysUser sysUser = userContext.user ?? new();
+            List<FixItems> fixItems = fixItemsService.ExcuteQuery().ToList();
             ViewData["sysUser"] = sysUser;
 
-            return View();
+            return View(fixItems);
         }
-        public async Task<IActionResult> Edit()
-        { 
-        return View();
-        }
-
         /// <summary>
         /// 取得 UserContext 資訊 (可能需要搬移至共用)
         /// </summary>

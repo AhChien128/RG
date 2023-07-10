@@ -1,0 +1,147 @@
+﻿@using X.PagedList;
+@using prjRGsystem.Models.DbModels;
+@using prjRGsystem.Models.ViewModels;
+@using static prjRGsystem.Manager.DbManager.ItemsManager;
+@model IPagedList<Items>
+@{
+    Criteria criteria = ViewData["criteria"] as Criteria ?? new();
+
+}
+<script type="text/javascript">
+    $(function () {
+        //換頁
+        $(".page-link").click(function () {
+            debugger;
+            var aa = $(this).attr('page');
+            $('input[name="criteria.pageNumber"]').val($(this).attr('page'));
+            $("#search").submit();
+        });
+
+
+
+        //刪除
+        $("button[name='btnDelete']").click(function () {
+            let itemID = $(this).attr('itemID');
+
+            if (confirm("是否確定刪除")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Removed","Items",new{Area="Admin"})',
+                    data: { id: itemID },
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                        window.location.href = '@Url.Action("Index","Items",new{Area="Admin"})';
+                    }
+                });
+            }
+        });
+
+    });
+    function nameClick(id) {
+        window.location.href = "@Url.Action("Edit", "MaintainClient", new { Area = "Admin"})" + "?id=" + id;
+    }
+
+</script>
+
+
+<div class="col-12 card">
+    <div class="border-bottom title-part-padding">
+        <h4 class="card-title mb-0">查詢條件</h4>
+    </div>
+
+
+    <div class="card-body">
+        <form class="form-horizontal" action="@Url.Action("Index", "Items", new{Area="Admin"})" method="get" id="search">
+            <div class="mb-3 row">
+                <input type="hidden" name="criteria.pageNumber" value="@(criteria.pageNumber)" />
+                <label class="col-sm-4 control-label col-form-label" style="text-align:right;">
+                    名稱：
+                </label>
+                <div class="col-sm-4">
+                    @{
+                        <input type="text" class="form-control" autocomplete="off" name="criteria.name" value="@criteria.name">
+                    }
+                </div>
+            </div>
+            <div class="p-3 border-top">
+                <div class="btn-set-inner text-center">
+
+                    <button class="btn btn-info" id="search" type="submit">查詢</button>
+                    <button class="btn btn-danger" id="clear" type="button">清除</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 d-flex align-items-stretch">
+        <div class="card w-100">
+            <div class="card-body">
+                <div>
+                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "Items", new { Area = "Admin",id=0})">新增</a>
+                </div>
+                <div class="month-table">
+                    <div class="table-responsive mt-3">
+                        <table class="table stylish-table v-middle mb-0 no-wrap" style="text-align:center;">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 text-muted fw-normal">項次</th>
+                                    <th class="border-0 text-muted fw-normal">廠商</th>
+                                    <th class="border-0 text-muted fw-normal">名稱</th>
+                                    <th class="border-0 text-muted fw-normal">價錢</th>
+                                    <th class="border-0 text-muted fw-normal">成本</th>
+                                    <th class="border-0 text-muted fw-normal">描述</th>
+                                    <th class="border-0 text-muted fw-normal">功能</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int rowindex = 0;
+                                    foreach (Items items in Model)
+                                    {
+                                        rowindex++;
+                                        <tr>
+                                            <td>@(rowindex)</td>
+                                            <td>@(items.productBrand)</td>
+                                            <td><label id="memberName" onclick="nameClick(@(items.id));">@(items.productName)</label></td>
+                                            <td>@(items.productPrice)</td>
+                                            <td>@(items.productCost)</td>
+                                            <td>@(items.productDescribe)</td>
+                                            <td>
+                                                <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "Items", new { Area = "Admin",id=items.id})">修改</a>
+                                                <button class="btn waves-effect waves-light btn-danger" name="btnDelete" itemID="@(items.id)">刪除</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot class="footable-pagination-wrapper">
+                                <tr>
+                                    <td colspan="7">
+                                        @if (Model != null)
+                                        {
+                                            @await Html.PartialAsync("~/Views/PartialView/PageNavigation.cshtml",new ViewCurrentPage(){
+                                        PageCount = Model.PageCount,
+                                        PageNumber = Model.PageNumber,
+                                        IsFirstPage = Model.IsFirstPage,
+                                        IsLastPage = Model.IsLastPage,
+                                        TotalItemCount=Model.TotalItemCount
+                                        })
+                                        }
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

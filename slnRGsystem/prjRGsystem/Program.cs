@@ -71,8 +71,14 @@ namespace prjRGsystem
             builder.Services.AddScoped<MemberService>();
             builder.Services.AddScoped<MemberManager>();
             builder.Services.AddScoped<MemberCarsManager>();
-            builder.Services.AddScoped<MemberCarsService>();
-
+            builder.Services.AddScoped<MemberCarsService>();    
+            
+            builder.Services.AddScoped<ItemsManager>();
+            builder.Services.AddScoped<ItemsService>();
+            builder.Services.AddScoped<FixItemsManager>();
+            builder.Services.AddScoped<FixItemsService>();
+            builder.Services.AddScoped<ItemOrderManager>();
+            builder.Services.AddScoped<ItemOrderService>();
 
             var app = builder.Build();
 

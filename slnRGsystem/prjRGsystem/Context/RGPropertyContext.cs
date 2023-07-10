@@ -223,6 +223,9 @@ namespace prjRGsystem.Context
         public DbSet<SysUserSubstitute> SysUserSubstitute => Set<SysUserSubstitute>();
         public DbSet<Member> Member => Set<Member>();
         public DbSet<MemberCars> MemberCars => Set<MemberCars>();
+        public DbSet<Items> Items => Set<Items>();
+        public DbSet<FixItems> FixItems => Set<FixItems>();
+        public DbSet<ItemOrder> ItemOrder => Set<ItemOrder>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

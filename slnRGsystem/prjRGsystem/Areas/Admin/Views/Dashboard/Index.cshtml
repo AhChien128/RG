@@ -1,4 +1,6 @@
-﻿<div class="row">
+﻿@using prjRGsystem.Models.DbModels;
+@model List<FixItems>
+<div class="row">
     <!-- Column -->
     <div class="col-lg-3 col-md-6">
         <div class="card">
@@ -98,7 +100,7 @@
                     <h4 class="card-title">今日維修項目</h4>
                 </div>
                 <div>
-                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "MaintainClient", new { Area = "Admin",id=0})">新增</a>
+                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "FixItems", new { Area = "Admin",carNumber="DHX-6548"})">新增</a>
                 </div>
 
                 <div class="month-table">
@@ -115,47 +117,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1.</td>
-                                    <td>GSR-125</td>
-                                    <td>NYD-888</td>
-                                    <td>張三</td>
-                                    <td>15210</td>
-                                    <td>200</td>
-                                </tr>
-                                <tr>
-                                    <td>2.</td>
-                                    <td>GSX-R150</td>
-                                    <td>NYD-333</td>
-                                    <td>小五</td>
-                                    <td>85420</td>
-                                    <td>4800</td>
-                                </tr>
-                                <tr>
-                                    <td>3.</td>
-                                    <td>GSX-S150</td>
-                                    <td>NYD-555</td>
-                                    <td>李四</td>
-                                    <td>25400</td>
-                                    <td>6400</td>
-                                </tr>
-                                <tr>
-                                    <td>4.</td>
-                                    <td>SUI 125</td>
-                                    <td>NYD-666</td>
-                                    <td>小張</td>
-                                    <td>1025</td>
-                                    <td>450</td>
-                                </tr>
-                                <tr>
-                                    <td>5.</td>
-                                    <td>Saluto 125</td>
-                                    <td>NYD-777</td>
-                                    <td>小明</td>
-                                    <td>35010</td>
-                                    <td>6000</td>
-                                </tr>
-
+                                @{
+                                    int rowindex = 0;
+                                    foreach (FixItems fixItem  in Model)
+                                    {
+                                        rowindex++;
+                                        <tr>
+                                            <td>@(rowindex).</td>
+                                            <td>@(fixItem.memberCarID)</td>
+                                            <td>NYD-888</td>
+                                            <td>張三</td>
+                                            <td>15210</td>
+                                            <td>200</td>
+                                        </tr>
+                                    
+                                    }
+                                }
 
                             </tbody>
                         </table>

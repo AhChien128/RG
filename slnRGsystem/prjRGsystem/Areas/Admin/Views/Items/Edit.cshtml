@@ -1,0 +1,109 @@
+﻿@using prjRGsystem.Models.DbModels;
+@model Items
+<script type="text/javascript">
+    $(function () {
+        //儲存
+        $('#save').click(function () {
+            let message = '';
+            let id = $('#id').val();
+            let productName = $('#productName').val();
+            let productPrice = $('#productPrice').val();
+            let productCost = $('#productCost').val();
+            let productDescribe = $('#productDescribe').val();
+            let productBrand = $('#productBrand').val();
+          
+            let formData = new FormData();
+            formData.append("productName", productName);
+            formData.append("productPrice", productPrice);
+            formData.append("productCost", productCost);
+            formData.append("productDescribe", productDescribe);
+            formData.append("productBrand", productBrand);
+            if (productName == '')
+                message += "請輸入產品名稱\r\n";
+            if (productPrice == '')
+                message += "請輸入價錢\r\n";
+            if (productCost == '')
+                message += "請輸入成本\r\n";
+            if (message.length > 0) {
+                alert(message);
+                retuen;
+            }
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Save", "Items", new { Area = "Admin" })',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    result = JSON.parse(result);
+                    alert(result.message);
+                    if (result.success) {
+                        window.location.href = '@Url.Action("Index", "Items", new { Area = "Admin" })';
+                    }
+                }
+            });
+        });
+    });
+</script>
+<div class="card">
+    <div class="card-body">
+        <h4>材料維護</h4>
+        <form>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-floating mb-3">
+                        <input type="hidden" id="id" value="@(Model.id)" />
+                        <input type="text" class="form-control" id="productBrand" placeholder="@Html.DisplayNameFor(m => m.productBrand)" value="@(Model.productBrand)">
+                        @Html.LabelFor(m => m.productBrand)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="productName" placeholder="@Html.DisplayNameFor(m => m.productName)" value="@(Model.productName)">
+                        @Html.LabelFor(m => m.productName)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="productPrice" placeholder="@Html.DisplayNameFor(m => m.productPrice)" value="@(Model.productPrice)">
+                        @Html.LabelFor(m => m.productPrice)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="productCost" placeholder="@Html.DisplayNameFor(m => m.productCost)" value="@(Model.productCost)">
+                        @Html.LabelFor(m => m.productCost)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="productDescribe" placeholder="@Html.DisplayNameFor(m => m.productDescribe)" value="@(Model.productDescribe)">
+                        @Html.LabelFor(m => m.productDescribe)
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-md-flex align-items-center mt-3">
+                        <div class="ms-auto mt-3 mt-md-0">
+                            <button type="button" class="btn btn-info font-weight-medium rounded-pill px-4" id="save">
+                                <div class="d-flex align-items-center">
+                                    送出
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
