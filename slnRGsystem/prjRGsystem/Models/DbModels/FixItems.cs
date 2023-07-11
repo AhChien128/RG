@@ -18,7 +18,7 @@ namespace prjRGsystem.Models.DbModels
         /// 維修項目ID
         /// </summary>
         [Display(Name = "維修清單ID")]
-        public long itemOrderID { get; set; }
+        public string? km { get; set; }
 
         [NotMapped]
         public Member? member { get; set; }
