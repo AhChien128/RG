@@ -22,7 +22,7 @@ namespace prjRGsystem.Services.DbServices
             List<Member>? member = await memberManager.GetEntitiesQ().ToListAsync() ?? new();
             foreach (MemberCars memberCar in memberCars)
             {
-                memberCar.member = member.Where(n => n.id == memberCar.memberID).FirstOrDefault();
+                memberCar.member = member.Where(n => n.id == memberCar.memberID).FirstOrDefault()??new();
             }
         }
     }

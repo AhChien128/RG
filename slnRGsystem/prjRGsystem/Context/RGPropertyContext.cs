@@ -226,6 +226,7 @@ namespace prjRGsystem.Context
         public DbSet<Items> Items => Set<Items>();
         public DbSet<FixItems> FixItems => Set<FixItems>();
         public DbSet<ItemOrder> ItemOrder => Set<ItemOrder>();
+        public DbSet<OutMoney> OutMoney => Set<OutMoney>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

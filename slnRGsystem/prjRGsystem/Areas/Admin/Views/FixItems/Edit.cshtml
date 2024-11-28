@@ -1,39 +1,35 @@
 ﻿@using prjRGsystem.Models.DbModels;
 @using prjRGsystem.Models.ViewModels;
-@model FixItemViewModel
+@model FixItems
 @{
-
+    List<MemberCars> memberCars = ViewData["memberCars"] as List<MemberCars> ?? new();
+    List<SysUser> sysUsers = ViewData["sysUsers"] as List<SysUser> ?? new();
 }
 <script type="text/javascript">
     $(function () {
         //儲存
         $('#save').click(function () {
             let message = '';
-            let id = $('#id').val();
-            let brand = $('#brand').val();
-            let carNumber = $('#carNumber').val();
-            let carCategroy = $('#carCategroy').val();
-            let memberID = $('#memberID').val();
-            let sex = $("input[name='putOption.sex']:checked").val();
+            let id = $("input[name='id']").val();
+            let memberCarID = $("select[name='customSelect']").find(':selected').val();
+            let sysUserID = $("select[name='sysUserSelect']").find(':selected').val();
+
+            let km = $("input[name='memberCarsKm']").val();
+            let selectedItemIDs = $("select[name='selectedItemIDs']").val();
+
             let formData = new FormData();
-            formData.append("id", id);
-            formData.append("brand", brand);
-            formData.append("carNumber", carNumber);
-            formData.append("carCategroy", carCategroy);
-            formData.append("memberID", memberID);
-            if (brand == '')
-                message += "請輸入廠牌\r\n";
-            if (carNumber == '')
-                message += "請輸入車牌\r\n";
-            if (carCategroy == '')
-                message += "請輸入車款\r\n";
-            if (message.length > 0) {
-                alert(message);
-                retuen;
+            formData.append("putOption.id", id);
+            formData.append("putOption.memberCarID", memberCarID);
+            formData.append("putOption.sysUserID", sysUserID);
+            formData.append("putOption.km", km);
+
+            for (let i = 0; i < selectedItemIDs.length; i++) {
+                formData.append("putOption.selectedItemIDs", selectedItemIDs[i]);
             }
+    
             $.ajax({
                 type: 'POST',
-                url: '@Url.Action("Save", "MemberCars", new { Area = "Admin" })',
+                url: '@Url.Action("Save", "Fixitems", new { Area = "Admin" })',
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -42,7 +38,7 @@
                     let id = result.id;
                     alert(result.message);
                     if (result.success) {
-                        window.location.href = '@Url.Action("Edit", "MaintainClient", new { Area = "Admin" })?id=' + id;
+                        window.location.href = '@Url.Action("Index", "Dashboard", new { Area = "Admin" })';
                     }
                     else {
                         alert(result.message);
@@ -51,7 +47,7 @@
             });
         });
         //車號連動客戶資訊
-        $('select[name="memberCar"]').change(function () {
+        $('select[name="customSelect"]').change(function () {
 
             let memberCarsID = $(this).val();
             $.ajax({
@@ -59,9 +55,11 @@
                 url: '@(Url.Action("LoadMemberInfo", "FixItems", new { Area = "Admin" }))',
                 data: { memberCarsID: memberCarsID },
                 success: function (result) {
+                    console.log(result);
                     $('input[name="customName"]').val(result.member.name);
                     $('input[name="customPhone"]').val(result.member.phoneNumber);
                     $('input[name="carCategroy"]').val(result.carCategroy);
+                    $('input[name="customID"]').val(result.member.id);
                 }
             });
 
@@ -79,54 +77,75 @@
                         <label><span class="ps-3"></span></label>
                     </div>
                     <div class="form-group mb-4">
-                        <label class="mr-sm-2 " for="customSelect">客戶車輛</label>
-                        <select class="form-select mr-sm-2 form-control border border-info" id="customSelect" name="memberCar">
+                        <label class="mr-sm-2 " for="sysUserSelect">維修技師</label>
+                        <select class="form-select mr-sm-2 form-control border border-info" id="sysUserSelect" name="sysUserSelect">
                             <option selected="">請選擇</option>
                             @{
-                                if (Model.memberCars != null)
+                                if (sysUsers != null)
                                 {
-                                    foreach (MemberCars memberCar in Model.memberCars)
+                                    foreach (SysUser sysUser in sysUsers)
                                     {
-                                        <option value="@(memberCar.id)">@(memberCar.carNumber)</option>
+                                        <option value="@(sysUser.id)" @(sysUser.id == Model.sysUserID ? "selected" : "")>@(sysUser.userName)</option>
                                     }
-
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="mr-sm-2 " for="customSelect">客戶車輛</label>
+                        <select class="form-select mr-sm-2 form-control border border-info" id="customSelect" name="customSelect">
+                            <option selected="">請選擇</option>
+                            @{
+                                if (memberCars != null)
+                                {
+                                    foreach (MemberCars memberCar in memberCars)
+                                    {
+                                        <option value="@(memberCar.id)" @(memberCar.id == Model.memberCarID ? "selected" : "")>@(memberCar.carNumber)</option>
+                                    }
                                 }
                             }
                         </select>
                     </div>
                     <div class="form-group mb-4">
                         <label>
+                            <span class="mr-sm-2">目前公里數</span>
+                        </label>
+                        <input type="text" name="memberCarsKm" class="form-control border border-info" value="@(Model.km)">
+                        <input type="hidden" name="id" value="@(Model.id)">
+                    </div>
+                    <div class="form-group mb-4">
+                        <label>
                             <span class="mr-sm-2">客戶姓名</span>
                         </label>
-                        <input type="text" name="customName" class="form-control border border-info" value="" disabled>
-
+                        <input type="text" name="customName" class="form-control border border-info" value="@(Model.member!=null?Model.member.name:"")" disabled>
                     </div>
                     <div class="form-group mb-4">
                         <label>
                             <span class="mr-sm-2">客戶電話</span>
                         </label>
-                        <input type="text" name="customPhone" class="form-control border border-info" value="" disabled>
+                        <input type="text" name="customPhone" class="form-control border border-info" value="@(Model.member!=null?Model.member.phoneNumber:"")" disabled>
 
                     </div>
                     <div class="form-group mb-4">
                         <label>
                             <span class="mr-sm-2">車款</span>
                         </label>
-                        <input type="text" name="carCategroy" class="form-control border border-info" value="" disabled>
+                        <input type="text" name="carCategroy" class="form-control border border-info" value="@(Model.memberCar!=null?Model.memberCar.carCategroy:"")" disabled>
 
                     </div>
 
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
+                                維修項目
                                 <div class="card-body">
-                                    <select multiple="multiple" size="10" class="duallistbox" style="display: none;">
+                                    <select multiple="multiple" size="10" class="duallistbox" style="display: none;" name="selectedItemIDs">
                                         @{
-                                            if (Model.items != null)
+                                            if (Model.selectedItems != null)
                                             {
-                                                foreach (Items item in Model.items)
+                                                foreach (Items item in Model.selectedItems)
                                                 {
-                                                    <option value="@(item.id)">@(item.productName)</option>
+                                                    <option value="@(item.id)" @(item.isSelected ? "selected" : "")>@(item.productName)</option>
                                                 }
                                             }
                                         }

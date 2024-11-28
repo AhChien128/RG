@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using prjRGsystem.Attributes;
 using prjRGsystem.Context;
 using prjRGsystem.Extensions;
 using prjRGsystem.Models.DbModels;
+using prjRGsystem.Models.ViewModels;
 using prjRGsystem.Services.DbServices;
 
 namespace prjRGsystem.Areas.Admin.Controllers
@@ -13,21 +15,33 @@ namespace prjRGsystem.Areas.Admin.Controllers
         private readonly ISession? session;
         private readonly ILogger<DashboardController> logger;
         private readonly FixItemsService fixItemsService;
-        public DashboardController(IHttpContextAccessor _httpContextAccessor, ILogger<DashboardController> _logger, FixItemsService _fixItemsService)
+        private readonly SysUserService sysUserService;
+        private readonly OutMoneyService outMoneyService;
+        public DashboardController(IHttpContextAccessor _httpContextAccessor,
+            ILogger<DashboardController> _logger,
+            FixItemsService _fixItemsService,
+            SysUserService _sysUserService,
+            OutMoneyService _outMoneyService)
         {
             if (_httpContextAccessor.HttpContext is not null)
                 session = _httpContextAccessor.HttpContext.Session;
             logger = _logger;
             fixItemsService = _fixItemsService;
+            sysUserService = _sysUserService;
+            outMoneyService = _outMoneyService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            UserContext userContext = GetUserLogin() ?? new();
-            SysUser sysUser = userContext.user ?? new();
-            List<FixItems> fixItems = fixItemsService.ExcuteQuery().ToList();
-            ViewData["sysUser"] = sysUser;
-
-            return View(fixItems);
+            DashboardViewModel dashboardViewModel = new DashboardViewModel();
+            dashboardViewModel.toDayFixItems = fixItemsService.ExcuteQuery().ToList();
+            await fixItemsService.PrepareDataAsync(dashboardViewModel.toDayFixItems);
+            dashboardViewModel.dayTotal = dashboardViewModel.toDayFixItems.Sum(n => n.total);
+            List<SysUser> sysUsers = await sysUserService.GetEntitiesQ().ToListAsync();
+            await sysUserService.PrepareDataAsync(sysUsers);
+            dashboardViewModel.sysUsers = sysUsers;
+            dashboardViewModel.outMoney = await outMoneyService.GetEntitiesQ().Where(n => n.createDate.Value.Date == DateTime.Now.Date).ToListAsync();
+            dashboardViewModel.outMoneyTotal = outMoneyService.GetEntitiesQ().Where(n => n.createDate.Value.Date == DateTime.Now.Date).Sum(n => n.itemMoney);
+            return View(dashboardViewModel);
         }
         /// <summary>
         /// 取得 UserContext 資訊 (可能需要搬移至共用)

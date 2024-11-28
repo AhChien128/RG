@@ -2,6 +2,7 @@
 using prjRGsystem.Managers.DbManagers;
 using prjRGsystem.Models.DbModels;
 using Microsoft.EntityFrameworkCore;
+using prjRGsystem.Manager.DbManager;
 
 namespace prjRGsystem.Services.DbServices
 {
@@ -12,19 +13,22 @@ namespace prjRGsystem.Services.DbServices
         private readonly SysUsersRolesManager sysUsersRolesManager;
         private readonly SysUserSubstituteManager sysUserSubstituteManager;
         private readonly SysUserAskForLeaveManager sysUserAskForLeaveManager;
+        private readonly FixItemsService fixItemsService;
         public SysUserService(RGPropertyContext _db,
             IHttpContextAccessor _httpContextAccessor,
             SysDepartmentManager _sysDepartmentManager,
             SysRolesManager _sysRolesManager,
             SysUsersRolesManager _sysUsersRolesManager,
             SysUserSubstituteManager _sysUserSubstituteManager,
-            SysUserAskForLeaveManager _sysUserAskForLeaveManager) : base(_db, _httpContextAccessor)
+            SysUserAskForLeaveManager _sysUserAskForLeaveManager,
+            FixItemsService _fixItemsService) : base(_db, _httpContextAccessor)
         {
             sysDepartmentManager = _sysDepartmentManager;
             sysRolesManager = _sysRolesManager;
             sysUsersRolesManager = _sysUsersRolesManager;
             sysUserSubstituteManager = _sysUserSubstituteManager;
             sysUserAskForLeaveManager = _sysUserAskForLeaveManager;
+            fixItemsService = _fixItemsService;
         }
 
         public async Task PrepareDataAsync(SysUser sysUser)
@@ -49,6 +53,7 @@ namespace prjRGsystem.Services.DbServices
                 Dictionary<Int64, SysUser> dicSysUser = await GetEnterpriseEntitiesQ().ToDictionaryAsync(m => m.id, m => m);
                 List<SysUserAskForLeave> askForLeaves = await sysUserAskForLeaveManager.GetEnterpriseEntitiesQ().Where(m => susUserIds.Contains(m.sysUserId)).ToListAsync();
                 Dictionary<Int64, List<SysUserAskForLeave>> sysUserAskForLeaves = askForLeaves.GroupBy(m => m.sysUserId).ToDictionary(m => m.Key, m => m.ToList());
+                List<FixItems> fixItems =await fixItemsService.GetEntitiesQ().ToListAsync();
                 foreach (SysUser sysUser in sysUsers)
                 {
                     if (sysDepartmentMap.ContainsKey(sysUser.userDepartmentId))
@@ -82,6 +87,11 @@ namespace prjRGsystem.Services.DbServices
                             if (dicSysRoles.ContainsKey(dicSysUsersRoles[sysUser.id][i].sysRolesId))
                                 sysUser.sysRoles.Add(dicSysRoles[dicSysUsersRoles[sysUser.id][i].sysRolesId]);
                         }
+                    }
+                    if (fixItems.Count > 0)
+                    {
+                        await fixItemsService.PrepareDataAsync(fixItems);
+                        sysUser.todayTotal = fixItems.Where(n => n.sysUserID == sysUser.id&&n.createDate.Value.Date==DateTime.Now.Date).Sum(n => n.total);
                     }
                 }
             }

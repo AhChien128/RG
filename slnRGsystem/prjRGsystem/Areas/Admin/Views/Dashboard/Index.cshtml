@@ -1,5 +1,57 @@
 ﻿@using prjRGsystem.Models.DbModels;
-@model List<FixItems>
+@using prjRGsystem.Models.ViewModels;
+@model DashboardViewModel
+
+<script type="text/javascript">
+    $(function () {
+        //刪除
+        $("button[name='btnFixitemsDelete']").click(function () {
+            let itemID = $(this).attr('itemID');
+
+            if (confirm("是否確定刪除")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Removed","FixItems",new{Area="Admin"})',
+                    data: { id: itemID },
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                        window.location.href = '@Url.Action("Index","Items",new{Area="Admin"})';
+                    }
+                });
+            }
+        });
+
+        //刪除
+        $("button[name='btnOutMoneyDelete']").click(function () {
+            let itemID = $(this).attr('itemID');
+
+            if (confirm("是否確定刪除")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Removed","OutMoney",new{Area="Admin"})',
+                    data: { id: itemID },
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        if (result.success) {
+                            alert(result.message);
+                        } else {
+                            alert(result.message);
+                        }
+                        window.location.href = '@Url.Action("Index","Items",new{Area="Admin"})';
+                    }
+                });
+            }
+        });
+
+
+    
+    });
+</script>
 <div class="row">
     <!-- Column -->
     <div class="col-lg-3 col-md-6">
@@ -10,8 +62,8 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-credit-card fill-white feather-lg"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
                     </div>
                     <div class="ms-2 align-self-center">
-                        <h3 class="mb-0">$30249</h3>
-                        <h6 class="text-muted mb-0">今日業績123</h6>
+                        <h3 class="mb-0">$@(Model.dayTotal)</h3>
+                        <h6 class="text-muted mb-0">今日業績</h6>
                     </div>
                 </div>
             </div>
@@ -27,7 +79,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor fill-white feather-lg"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
                     </div>
                     <div class="ms-2 align-self-center">
-                        <h3 class="mb-0">$12000</h3>
+                        <h3 class="mb-0">$@(Model.outMoneyTotal)</h3>
                         <h6 class="text-muted mb-0">今日支出</h6>
                     </div>
                 </div>
@@ -39,56 +91,29 @@
 <!-- Row -->
 <div class="row">
     <!-- Column -->
-    <div class="col-lg-3 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex flex-row">
-                    <div class="round round-lg text-white d-flex align-items-center justify-content-center rounded-circle bg-primary">
-                        <i class="mdi mdi-odnoklassniki"></i>
-                    </div>
-                    <div class="ms-2 align-self-center">
-                        <h3 class="mb-0">$10100</h3>
-                        <h6 class="text-muted mb-0">Jay</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex flex-row">
-                    <div class="round round-lg text-white d-flex align-items-center justify-content-center rounded-circle bg-primary">
-                        <i class="mdi mdi-odnoklassniki"></i>
-                    </div>
-                    <div class="ms-2 align-self-center">
-                        <h3 class="mb-0">$10000</h3>
-                        <h6 class="text-muted mb-0">hao</h6>
+    @{
+        if (Model.sysUsers != null)
+        {
+            foreach (SysUser sysUser in Model.sysUsers)
+            {
+                <div class="col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex flex-row">
+                                <div class="round round-lg text-white d-flex align-items-center justify-content-center rounded-circle bg-primary">
+                                    <i class="mdi mdi-odnoklassniki"></i>
+                                </div>
+                                <div class="ms-2 align-self-center">
+                                    <h3 class="mb-0">$@(sysUser.todayTotal)</h3>
+                                    <h6 class="text-muted mb-0">@(sysUser.userName)</h6>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
-    <div class="col-lg-3 col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex flex-row">
-                    <div class="round round-lg text-white d-flex justify-content-center align-items-center rounded-circle bg-primary">
-                        <i class="mdi mdi-odnoklassniki"></i>
-                    </div>
-                    <div class="ms-2 align-self-center">
-                        <h3 class="mb-0">$10149</h3>
-                        <h6 class="text-muted mb-0">Lin</h6>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
+            }
+        }
+    }
 </div>
 <!-- Row -->
 <!-- Row -->
@@ -100,7 +125,7 @@
                     <h4 class="card-title">今日維修項目</h4>
                 </div>
                 <div>
-                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "FixItems", new { Area = "Admin",carNumber="DHX-6548"})">新增</a>
+                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "FixItems", new { Area = "Admin",carNumber=0})">新增</a>
                 </div>
 
                 <div class="month-table">
@@ -109,28 +134,119 @@
                             <thead>
                                 <tr>
                                     <th class="border-0 text-muted fw-normal">項次</th>
-                                    <th class="border-0 text-muted fw-normal">車款</th>
                                     <th class="border-0 text-muted fw-normal">車號</th>
                                     <th class="border-0 text-muted fw-normal">姓名</th>
+                                    <th class="border-0 text-muted fw-normal">車款</th>
                                     <th class="border-0 text-muted fw-normal">目前公里數</th>
                                     <th class="border-0 text-muted fw-normal">金額</th>
+                                    <th class="border-0 text-muted fw-normal">功能</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @{
                                     int rowindex = 0;
-                                    foreach (FixItems fixItem  in Model)
+                                    if (Model.toDayFixItems != null)
                                     {
-                                        rowindex++;
-                                        <tr>
-                                            <td>@(rowindex).</td>
-                                            <td>@(fixItem.memberCarID)</td>
-                                            <td>NYD-888</td>
-                                            <td>張三</td>
-                                            <td>15210</td>
-                                            <td>200</td>
-                                        </tr>
-                                    
+                                        foreach (FixItems fixItem in Model.toDayFixItems)
+                                        {
+                                            rowindex++;
+                                            <tr>
+                                                <td>
+                                                    @(
+                                                    rowindex
+                                                        ).
+                                                </td>
+                                                <td>
+                                                    @(
+                                                    fixItem.memberCar != null ? fixItem.memberCar.carNumber : ""
+                                                        )
+                                                </td>
+                                                <td>
+                                                    @(
+                                                    fixItem.member != null ? fixItem.member.name : ""
+                                                        )
+                                                </td>
+                                                <td>
+                                                    @(
+                                                    fixItem.memberCar != null ? fixItem.memberCar.carCategroy : ""
+                                                        )
+                                                </td>
+                                                <td>
+                                                    @(
+                                                    fixItem.km
+                                                        )
+                                                </td>
+                                                <td>
+                                                    @(
+                                                    fixItem.total
+                                                        )
+                                                </td>
+                                                <td>
+                                                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "FixItems", new { Area = "Admin",id=fixItem.id})">修改</a>
+                                                    <button class="btn waves-effect waves-light btn-danger" name="btnFixitemsDelete" itemID="@(fixItem.id)">刪除</button>
+                                                </td>
+                                            </tr>
+
+                                        }
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Row -->
+<!-- Row -->
+<div class="row">
+    <div class="col-lg-12 d-flex align-items-stretch">
+        <div class="card w-100">
+            <div class="card-body">
+                <div class="d-md-flex no-block">
+                    <h4 class="card-title">今日支出</h4>
+                </div>
+                <div>
+                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "OutMoney", new { Area = "Admin",id=0})">新增</a>
+                </div>
+
+                <div class="month-table">
+                    <div class="table-responsive mt-3">
+                        <table class="table stylish-table v-middle mb-0 no-wrap">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 text-muted fw-normal">項次</th>
+                                    <th class="border-0 text-muted fw-normal">項目</th>
+                                    <th class="border-0 text-muted fw-normal">金額</th>
+                                    <th class="border-0 text-muted fw-normal">功能</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int rowindex2 = 0;
+                                    if (Model.outMoney != null)
+                                    {
+                                        foreach (OutMoney outMoney in Model.outMoney)
+                                        {
+                                            rowindex2++;
+                                            <tr>
+                                                <td>
+                                                    @(rowindex2).
+                                                </td>
+                                                <td>
+                                                    @(outMoney.item)
+                                                </td>
+                                                <td>@(outMoney.itemMoney)</td>
+                                                <td>
+                                                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "OutMoney", new { Area = "Admin",id=outMoney.id})">修改</a>
+                                                    <button class="btn waves-effect waves-light btn-danger" name="btnOutMoneyDelete" itemID="@(outMoney.id)">刪除</button>
+                                                </td>
+                                            </tr>
+
+                                        }
                                     }
                                 }
 

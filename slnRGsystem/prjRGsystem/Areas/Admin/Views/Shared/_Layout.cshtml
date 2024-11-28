@@ -1,9 +1,15 @@
 ﻿@using prjRGsystem.Context
 @using prjRGsystem.Models.DbModels
 @using prjRGsystem.Extensions
+@using prjRGsystem.Services.DbServices;
 @inject IHttpContextAccessor httpContextAccessor
+@inject FixItemsService fixItemsService
 @{
     UserContext userContext = httpContextAccessor.HttpContext.Session.GetObjectFromJson<UserContext>(UserContext.SESSION_NAME);
+    await fixItemsService.PrepareDataAsync(fixItemsService.ExcuteQuery("toMonth").ToList());
+    long monthTotal = fixItemsService.ExcuteQuery("toMonth").ToList().Sum(n => n.total);
+    await fixItemsService.PrepareDataAsync(fixItemsService.ExcuteQuery("toYear").ToList());
+    long yearTotal = fixItemsService.ExcuteQuery("toYear").ToList().Sum(n => n.total);
 }
 
 <!DOCTYPE html>
@@ -389,13 +395,13 @@
                         <div class="d-flex me-3 ms-2">
                             <div class="chart-text me-2">
                                 <h5 class="mb-0"><small>月業績</small></h5>
-                                <h3 class="mt-0 text-info">$58,356</h3>
+                                <h3 class="mt-0 text-info">$@(monthTotal)</h3>
                             </div>
                         </div>
                         <div class="d-flex ms-2">
                             <div class="chart-text me-2">
                                 <h5 class="mb-0"><small>年總額</small></h5>
-                                <h3 class="mt-0 text-primary">$865,012</h3>
+                                <h3 class="mt-0 text-primary">$@(yearTotal)</h3>
                             </div>
                         </div>
                     </div>
@@ -472,5 +478,6 @@
     <script src="~/assets/libs/popper.js/popper.min.js"></script>
     <script src="~/assets/extra-libs/taskboard/js/jquery-ui.min.js"></script>
     <script src="~/assets/libs/fullcalendar/dist/fullcalendar.min.js"></script>
+    <script src="~/assets/libs/fullcalendar/dist/locale-all.js"></script>
 </body>
 </html>

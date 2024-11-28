@@ -79,6 +79,8 @@ namespace prjRGsystem
             builder.Services.AddScoped<FixItemsService>();
             builder.Services.AddScoped<ItemOrderManager>();
             builder.Services.AddScoped<ItemOrderService>();
+            builder.Services.AddScoped<OutMoneyManager>();
+            builder.Services.AddScoped<OutMoneyService>();
 
             var app = builder.Build();
 

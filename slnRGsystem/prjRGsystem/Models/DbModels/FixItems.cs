@@ -19,12 +19,22 @@ namespace prjRGsystem.Models.DbModels
         /// </summary>
         [Display(Name = "維修清單ID")]
         public string? km { get; set; }
-
+        /// <summary>
+        /// 技師ID
+        /// </summary>
+        [Display(Name = "技師ID")]
+        public long sysUserID { get; set; }
+        [NotMapped]
+        public MemberCars? memberCar { get; set; } 
         [NotMapped]
         public Member? member { get; set; }
-
-
-        //[NotMapped]
-        //public ItemOrder itemOrder { get; set; }
+        [NotMapped]
+        public List<long>? itemOrderIDs { get; set; }
+        [NotMapped]
+        public List<Items>? selectedItems { get; set; }
+        [NotMapped]
+        public List<long>? selectedItemIDs { get; set; }
+        [NotMapped]
+        public long total { get; set; }
     }
 }

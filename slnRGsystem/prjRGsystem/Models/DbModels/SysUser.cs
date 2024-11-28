@@ -70,5 +70,7 @@ namespace prjRGsystem.Models.DbModels
         [Display(Name = "備註")]
         [StringLength(500, ErrorMessage = "{0}長度不能超過{1}字元")]
         public string? remark { get; set; }
+        [NotMapped]
+        public long todayTotal{get;set;}
     }
 }

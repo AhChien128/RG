@@ -17,12 +17,12 @@ namespace prjRGsystem.Models.DbModels
         /// 材料價錢
         /// </summary>
         [Display(Name = "價錢")]
-        public string? productPrice { get; set; }
+        public int productPrice { get; set; }
         /// <summary>
         /// 材料成本
         /// </summary>
         [Display(Name = "成本")]
-        public string? productCost { get; set; }
+        public int productCost { get; set; }
         /// <summary>
         /// 材料描述
         /// </summary>
@@ -33,6 +33,8 @@ namespace prjRGsystem.Models.DbModels
         /// </summary>
         [Display(Name = "品牌or廠商")]
         public string? productBrand { get; set; }
+        [NotMapped]
+        public bool isSelected { get; set;}
 
     }
 }
