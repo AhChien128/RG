@@ -1,14 +1,88 @@
 ﻿
 <div id='calendar'></div>
+
+<div id="reserveModal"></div>
+<style>
+    .fc-daygrid-day.fc-day-today.highlight-today {
+        background-color: rgb(255,255,180) !important;
+    }
+</style>
 <script>
-
     document.addEventListener('DOMContentLoaded', function () {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            locale:'zh-tw'
-        });
-        calendar.render();
-    });
+        setTimeout(function () {
+            const calendarEl = document.getElementById('calendar');
+            let currentEvent = null;
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'zh-tw',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,listWeek'
+                },
+                events: fetchCalendarEvents,
+                dateClick: function (info) {
+                    Add(0);
+                },
+                eventClick: function (info) {
+                    Add(info.event.id);
+                },
+                dayCellClassNames: function (info) {
+                    if (info.isToday) {
+                        return ['highlight-today'];
+                    }
+                    return [];
+                }
+            });
 
+            calendar.render();
+            window.calendar = calendar;
+
+        }, 1000);
+
+        function fetchCalendarEvents(fetchInfo, successCallback, failureCallback) {
+            $.ajax({
+                url: '@Url.Action("GetReserves","Calendar",new{Area="Admin"})',
+                method: 'GET',
+                data: {
+                    strDate: fetchInfo.startStr,
+                    endDate: fetchInfo.endStr
+                },
+                success: function (data) {
+                    const events = data.map(reserve => ({
+                        id: reserve.id,
+                        title: reserve.title,
+                        start: reserve.start,
+                        end: reserve.end,
+                        backgroundColor: reserve.backgroundColor,
+                        borderColor: reserve.borderColor
+                    }));
+                    successCallback(events);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching events:', error);
+                    failureCallback(error);
+                }
+            });
+        }
+
+        function Add(id) {
+            $.ajax({
+                url: '@Url.Action("EditReserves","Calendar",new{Area="Admin"})',
+                method: 'GET',
+                data: {
+                    id: id
+                },
+                success: function (result) {
+                    $("#reserveModal").empty();
+                    $("#reserveModal").append(result);
+                    $("#eventModal").modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching events:', error);
+                    failureCallback(error);
+                }
+            });
+        }
+    });
 </script>

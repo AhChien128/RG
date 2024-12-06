@@ -24,7 +24,6 @@
     <title>榮記車業管理系統</title>
 
     <link rel="stylesheet" href="~/assets/libs/select2/dist/css/select2.min.css">
-    <link rel="stylesheet" href="~/css/style.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <!-- ============================================================== -->
     <!-- All Jquery -->
@@ -33,9 +32,8 @@
     <link rel="stylesheet" type="text/css" href="~/assets/libs/bootstrap-duallistbox/dist/bootstrap-duallistbox.min.css">
     <link rel="stylesheet" href="~/css/custom.min.css" />
     <!--月曆-->
-    <link href="~/assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet">
-    <link href="~/assets/extra-libs/calendar/calendar.css" rel="stylesheet">
-    <link href="~/css/style.min.css" rel="stylesheet">
+    <link href="~/assets/libs/fullcalendar/main.css" rel="stylesheet">
+    <link href="~/css/style.min.css" rel="stylesheet">   
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -43,32 +41,32 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<style type="text/css">
-    .jqstooltip {
-        position: absolute;
-        left: 0px;
-        top: 0px;
-        visibility: hidden;
-        background: rgb(0, 0, 0) transparent;
-        background-color: rgba(0,0,0,0.6);
-        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
-        -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
-        color: white;
-        font: 10px arial, san serif;
-        text-align: left;
-        white-space: nowrap;
-        padding: 5px;
-        border: 1px solid white;
-        z-index: 10000;
-    }
-
-    .jqsfield {
-        color: white;
-        font: 10px arial, san serif;
-        text-align: left;
-    }</style>
 <body data-theme="dark">
     <style>
+        .jqstooltip {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            visibility: hidden;
+            background: rgb(0, 0, 0) transparent;
+            background-color: rgba(0,0,0,0.6);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+            -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+            color: white;
+            font: 10px arial, san serif;
+            text-align: left;
+            white-space: nowrap;
+            padding: 5px;
+            border: 1px solid white;
+            z-index: 10000;
+        }
+
+        .jqsfield {
+            color: white;
+            font: 10px arial, san serif;
+            text-align: left;
+        }
+
         .text-themecolor {
             color: #1e88e5;
         }
@@ -471,13 +469,13 @@
     <script src="~/assets/extra-libs/block-ui/block-ui.js"></script>
     <script src="~/assets/libs/bootstrap-duallistbox/dist/jquery.bootstrap-duallistbox.min.js"></script>
     <script src="~/js/pages/forms/dual-listbox/dual-listbox.js"></script>
-    <!--月曆-->    
-    <script src="~/js/pages/calendar/cal-init.js"></script>
+
     <script src="~/assets/libs/moment/min/moment.min.js"></script>
     <script src="~/assets/extra-libs/sparkline/sparkline.js"></script>
     <script src="~/assets/libs/popper.js/popper.min.js"></script>
     <script src="~/assets/extra-libs/taskboard/js/jquery-ui.min.js"></script>
-    <script src="~/assets/libs/fullcalendar/dist/fullcalendar.min.js"></script>
-    <script src="~/assets/libs/fullcalendar/dist/locale-all.js"></script>
+    <!--月曆-->
+    <script src="~/assets/libs/fullcalendar/main.js"></script>
+    <script src="~/assets/libs/fullcalendar/locales-all.js"></script>   
 </body>
 </html>

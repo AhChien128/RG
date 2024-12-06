@@ -9,7 +9,7 @@ namespace prjRGsystem.Manager.DbManager
 {
     public class FixItemsManager : AbstractAppEntityManager<FixItems>
     {
-        public FixItemsManager(RGPropertyContext _db, IHttpContextAccessor _httpContextAccessor) : base(_db)
+        public FixItemsManager(RGPropertyContext _db) : base(_db)
         {
 
 

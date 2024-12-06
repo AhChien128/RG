@@ -1,5 +1,140 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using X.PagedList;
+@using prjRGsystem.Models.DbModels;
+@using prjRGsystem.Models.ViewModels;
+@using static prjRGsystem.Manager.DbManager.EstimatesManager;
+@model IPagedList<Estimates>
 @{
+    Criteria criteria = ViewData["criteria"] as Criteria ?? new();
 }
+
+<script type="text/javascript">
+    $(function () {
+        //查詢
+        $("#search").click(function () {
+            var $myForm = $("#formList");
+            $myForm.submit();
+        })
+        //清除查詢條件
+        $('#clear').click(function () {
+            $("input[name='criteria.keyWord']").val("");
+            $('#search').click();
+        });
+        //換頁
+        $(".page-link").click(function () {
+            var aa = $(this).attr('page');
+            $('input[name="criteria.pageNumber"]').val($(this).attr('page'));
+            $("#search").click();
+        });
+
+    });
+</script>
+
+
+<div class="col-12 card">
+    <div class="border-bottom title-part-padding">
+        <h4 class="card-title mb-0">查詢條件</h4>
+    </div>
+
+
+    <div class="card-body">
+        <form class="form-horizontal" action="@Url.Action("Index", "Estimate", new{Area="Admin"})" method="get" id="formList">
+            <div class="mb-3 row">
+                <input type="hidden" name="criteria.pageNumber" value="@(criteria.pageNumber)" />
+                <label class="col-sm-1 control-label col-form-label" style="text-align:right;">
+                    關鍵字：
+                </label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" autocomplete="off" name="criteria.keyWord" value="@(criteria.keyWord)" placeholder="可查詢車主、車牌、引擎號碼、車種">
+                </div>
+                <label class="col-sm-1 control-label col-form-label" style="text-align:right;">
+                    品牌：
+                </label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" autocomplete="off" name="criteria.keyWord" value="@(criteria.keyWord)" placeholder="可查詢車主、車牌、引擎號碼、車種">
+                </div>
+            </div>
+            <div class="p-3 border-top">
+                <div class="btn-set-inner text-center">
+                    <button class="btn btn-info" id="search" type="button">查詢</button>
+                    <button class="btn btn-danger" id="clear" type="button">清除</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 d-flex align-items-stretch">
+        <div class="card w-100">
+            <div class="card-body">
+                <div>
+                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "Estimate", new { Area = "Admin",id=0})">新增</a>
+                </div>
+                <div class="month-table">
+                    <div class="table-responsive mt-3">
+                        <table class="table stylish-table v-middle mb-0 no-wrap" style="text-align:center;">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 text-muted fw-normal">項次</th>
+                                    <th class="border-0 text-muted fw-normal">車主</th>
+                                    <th class="border-0 text-muted fw-normal">車號</th>
+                                    <th class="border-0 text-muted fw-normal">車種</th>
+                                    <th class="border-0 text-muted fw-normal">年分</th>
+                                    <th class="border-0 text-muted fw-normal">引擎號碼</th>
+                                    <th class="border-0 text-muted fw-normal">聯絡方式</th>
+                                    <th class="border-0 text-muted fw-normal">品牌</th>
+                                    <th class="border-0 text-muted fw-normal">進廠時間</th>
+                                    <th class="border-0 text-muted fw-normal">功能</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if (Model is not null)
+                                    {
+                                        int rowindex = 0;
+                                        foreach (Estimates estimate in Model)
+                                        {
+                                            rowindex++;
+                                            <tr>
+                                                <td>@(rowindex)</td>
+                                                <td>@(estimate.carOwner)</td>
+                                                <td>@(estimate.carLicense)</td>
+                                                <td>@(estimate.carCategory)</td>
+                                                <td>@(estimate.year.HasValue ? estimate.year.Value.ToString("yyyy-MM") : "")</td>
+                                                <td>@(estimate.engineNum)</td>
+                                                <td>@(estimate.contact)</td>
+                                                <td>@(estimate.brand)</td>
+                                                <td>@(estimate.entryDate.HasValue ? estimate.entryDate.Value.ToString("yyyy-MM-dd") : "")</td>
+                                                <td>
+                                                    <a class="btn waves-effect waves-light btn-info" href="@Url.Action("Edit", "Estimate", new { Area = "Admin",id=estimate.id})">修改</a>
+                                                    <button class="btn waves-effect waves-light btn-danger" name="btnDelete" itemID="@(estimate.id)">刪除</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            </tbody>
+                            <tfoot class="footable-pagination-wrapper">
+                                <tr>
+                                    <td colspan="10">
+                                        @if (Model != null)
+                                        {
+                                            @await Html.PartialAsync("~/Views/PartialView/PageNavigation.cshtml",new ViewCurrentPage(){
+                                        PageCount = Model.PageCount,
+                                        PageNumber = Model.PageNumber,
+                                        IsFirstPage = Model.IsFirstPage,
+                                        IsLastPage = Model.IsLastPage,
+                                        TotalItemCount=Model.TotalItemCount
+                                        })
+                                        }
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

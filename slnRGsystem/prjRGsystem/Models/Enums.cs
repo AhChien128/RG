@@ -80,5 +80,16 @@ namespace prjRGsystem.Models
         AUDIT = 5 // 新增
 
     }
-
+    /// <summary>
+    /// 預約緊急程度
+    /// </summary>
+    public enum LevelType
+    {
+        [ColumnAttribute("緊急")]
+        High = 0,
+        [ColumnAttribute("一般")]
+        Medium = 1,
+        [ColumnAttribute("缓慢")]
+        Low = 2
+    }
 }

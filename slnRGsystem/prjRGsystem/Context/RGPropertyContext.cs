@@ -227,7 +227,9 @@ namespace prjRGsystem.Context
         public DbSet<FixItems> FixItems => Set<FixItems>();
         public DbSet<ItemOrder> ItemOrder => Set<ItemOrder>();
         public DbSet<OutMoney> OutMoney => Set<OutMoney>();
-
+        public DbSet<SysReserve> SysReserve => Set<SysReserve>();
+        public DbSet<Estimates> Estimates => Set<Estimates>();
+        public DbSet<EstimateItems> EstimateItems => Set<EstimateItems>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

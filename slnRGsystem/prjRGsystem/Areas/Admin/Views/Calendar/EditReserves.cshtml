@@ -1,0 +1,118 @@
+﻿@using prjRGsystem.Models.DbModels;
+@using prjRGsystem.Models;
+@model SysReserve
+
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">預約明細</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="mb-3">
+                        <label class="form-label">主旨</label>
+                        <input type="text" class="form-control" name="subject" value="@(Model.subject??"")">
+                        <input type="hidden" class="form-control" name="id" id="reserveId" value="@(Model.id)">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">內容</label>
+                        <textarea class="form-control" name="content">@(Model.content ?? "")</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventStart" class="form-label">起始時間</label>
+                        <input type="datetime-local" class="form-control" name="stratDate" value="@(Model.stratDate.HasValue? Model.stratDate.Value.ToString("yyyy-MM-ddTHH:mm"):"")">
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventEnd" class="form-label">結束時間</label>
+                        <input type="datetime-local" class="form-control" name="endDate" value="@(Model.endDate.HasValue? Model.endDate.Value .ToString("yyyy-MM-ddTHH:mm"):"")">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">備註</label>
+                        <textarea class="form-control" name="memo">@(Model.memo ?? "")</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="eventPriority" class="form-label">緊急程度</label>
+                        <select class="form-select" name="level">
+                            @{
+                                foreach (LevelType levelType in Enum.GetValues(typeof(LevelType)))
+                                {
+                                    string color = levelType switch
+                                    {
+                                        LevelType.High => "red",
+                                        LevelType.Medium => "orange",
+                                        LevelType.Low => "green",
+                                        _ => "black" // 預設顏色
+                                    };
+                                    <option value="@(levelType)" @(Model.LevelType_E == levelType ? "selected" : "") style="color: @(color);">
+                                        @(ColumnAttribute.GetDisplayName(levelType))
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="saveEvent">儲存</button>
+                <button type="button" class="btn btn-danger" id="deleteEvent">刪除</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $("#saveEvent").click(function () {
+            const formData = $("#eventForm").serialize();
+            $.ajax({
+                url: '@Url.Action("SaveReserves","Calendar",new{Area="Admin"})',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        $("#eventModal").modal('hide');
+                        if (window.calendar) {
+                            window.calendar.refetchEvents();
+                        }
+                        alert(response.message);
+                    } else {
+                        alert('儲存失敗！');
+                    }
+                },
+                error: function (xhr, status, error) {
+
+                    alert('儲存過程中發生錯誤');
+                }
+            });
+        });
+        $("#deleteEvent").click(function () {
+            const id = $("#reserveId").val();
+            if (confirm("您確定要刪除這個預約嗎？")) {
+                $.ajax({
+                    url: '@Url.Action("DeleteReserves","Calendar",new{Area="Admin"})',
+                    method: 'POST',
+                    data: { id: id },
+                    success: function (response) {                        
+                        if (response.success) {
+                            $("#eventModal").modal('hide');
+                            if (window.calendar) {
+                                window.calendar.refetchEvents();
+                            }
+                            alert(response.message);
+                        } else {
+                            alert('儲存失敗！');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+
+                        alert('儲存過程中發生錯誤');
+                    }
+                });
+
+            }
+        });
+    });
+
+</script>

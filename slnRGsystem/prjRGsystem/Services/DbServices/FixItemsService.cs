@@ -12,11 +12,11 @@ namespace prjRGsystem.Services.DbServices
         private readonly MemberManager memberManager;
         private readonly ItemOrderManager itemOrderManager;
         private readonly ItemsManager itemsManager;
-        public FixItemsService(RGPropertyContext _db, IHttpContextAccessor _httpContextAccessor,
-            MemberCarsManager _memberCarsManager,
-            MemberManager _memberManager,
-             ItemOrderManager _itemOrderManager,
-             ItemsManager _itemsManager) : base(_db, _httpContextAccessor)
+        public FixItemsService(RGPropertyContext _db,
+               MemberCarsManager _memberCarsManager,
+               MemberManager _memberManager,
+               ItemOrderManager _itemOrderManager,
+               ItemsManager _itemsManager) : base(_db)
         {
             memberCarsManager = _memberCarsManager;
             memberManager = _memberManager;

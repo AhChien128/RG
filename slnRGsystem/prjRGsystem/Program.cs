@@ -71,8 +71,8 @@ namespace prjRGsystem
             builder.Services.AddScoped<MemberService>();
             builder.Services.AddScoped<MemberManager>();
             builder.Services.AddScoped<MemberCarsManager>();
-            builder.Services.AddScoped<MemberCarsService>();    
-            
+            builder.Services.AddScoped<MemberCarsService>();
+
             builder.Services.AddScoped<ItemsManager>();
             builder.Services.AddScoped<ItemsService>();
             builder.Services.AddScoped<FixItemsManager>();
@@ -81,6 +81,12 @@ namespace prjRGsystem
             builder.Services.AddScoped<ItemOrderService>();
             builder.Services.AddScoped<OutMoneyManager>();
             builder.Services.AddScoped<OutMoneyService>();
+            builder.Services.AddScoped<SysReserveManager>();
+            builder.Services.AddScoped<SysReserveService>();
+            builder.Services.AddScoped<EstimatesManager>();
+            builder.Services.AddScoped<EstimatesService>();
+            builder.Services.AddScoped<EstimateItemsManager>();
+            builder.Services.AddScoped<EstimateItemsService>();
 
             var app = builder.Build();
 
